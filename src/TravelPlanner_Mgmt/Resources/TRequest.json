@@ -1,0 +1,26 @@
+{
+    "CreateRequest": {
+      "success": {
+        "title": "Success",
+        "message": "Travel Request created successfully!",
+        "color": "green"
+      },
+      "error": {
+        "title": "Error",
+        "message": "Failed to create a  Travel Request. Please try again.",
+        "color": "red"
+      },
+      "warning": {
+        "title": "Validation Error",
+        "message": "Please fill all required fields correctly.",
+        "color": "orange"
+      },
+      "delete": {
+        "title": "Delete Employee",
+        "message": "Deleted Travel Rewquest Successfully",
+        "errorMessage": "Failed to delete Travel Request. Please try again.",
+        "color": "red"
+      }
+    }
+    
+  }

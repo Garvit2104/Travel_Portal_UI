@@ -1,0 +1,29 @@
+{
+    "PageTitle": "New travel Requests",
+    "RequestID": "Request ID",
+    "NewListHeadColumns" :{
+        "fields" : [
+        {
+            "id" : "request_id", "label" : "Request ID", "type" : "number", "sorting": true
+        },
+        {
+            "id" : "raised_by_employee_id", "label": "Employee ID", "type" : "number", "sorting": true
+        },
+        {
+            "id": "from_date", "label": "Start Date", "type" : "date", "sorting": true
+        },
+        {
+            "id": "to_date", "label": "End Date", "type" : "date", "sorting": true
+        },
+        {
+            "id": "location_id", "label": "Destination", "type" : "number", "sorting": true
+        },
+        {
+            "id": "purpose_of_travel", "label": "Purpose", "type" : "text", "sorting": false
+        },
+        {
+            "id": "request_raised_on", "label": "Request Raised On", "type" : "date", "sorting": true
+        }
+    ]
+}
+}

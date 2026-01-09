@@ -1,0 +1,13 @@
+{
+    "UserDetails": {
+      "fields": [
+        { "Id": "employee_id", "label": "Employee ID", "type": "text" },
+        { "Id": "first_name", "label": "First Name", "type": "text" },
+        { "Id": "last_name", "label": "Last Name", "type": "text" },
+        { "Id": "phone_number", "label": "Phone Number", "type": "text" },
+        { "Id": "email_address", "label": "Email Address", "type": "text" },
+        { "Id": "current_grade_id", "label": "Current Grade", "type": "select" },
+        { "Id": "role", "label": "Role", "type": "radio" }
+      ]
+    }
+  }

@@ -1,0 +1,31 @@
+{
+    "AddEmployee": {
+      "success": {
+        "title": "Success",
+        "message": "Employee added successfully!",
+        "color": "green"
+      },
+      "update": {
+        "title": "Success",
+        "message": "Employee Grades updated successfully!",
+        "color": "green"
+      },
+      "error": {
+        "title": "Error",
+        "message": "Failed to add employee. Please try again.",
+        "color": "red"
+      },
+      "warning": {
+        "title": "Validation Error",
+        "message": "Please fill all required fields correctly.",
+        "color": "orange"
+      },
+      "delete": {
+        "title": "Delete Employee",
+        "message": "User Record Deleted Successfully",
+        "errorMessage": "Failed to delete employee. Please try again.",
+        "color": "red"
+      }
+    }
+    
+  }

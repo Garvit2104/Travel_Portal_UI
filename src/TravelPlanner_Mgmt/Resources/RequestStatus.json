@@ -1,0 +1,20 @@
+{
+    "RequestStatus":{
+        "Approve" : {
+            "title": "Approved",
+            "message": "Travel Request approved successfully!",
+            "color": "green"
+        },
+        "Reject" : {
+            "title": "Rejected",
+            "message": "Travel Request rejected successfully!",
+            "color": "red"
+        },
+        "RejectWarning" : {
+            "title": "Warning",
+            "message": "Are you sure you want to reject a request.",
+            "color": "orange"
+
+        }
+    }
+}

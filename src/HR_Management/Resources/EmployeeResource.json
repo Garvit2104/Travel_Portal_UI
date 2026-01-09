@@ -1,0 +1,76 @@
+
+{
+    "employeeForm": [
+        {
+            "inputFieldLabel": "First Name",
+            "inputFieldType": "text",
+            "inputFieldName": "firstName",
+            "isRequired": true,
+            "placeholderText": "Enter first name",
+            "id" : "firstName",
+            "isSelectField": false,
+            "visible": true,
+            "editableInEditMode": false
+        },
+        {
+            "inputFieldLabel": "Last Name",
+            "inputFieldType": "text",
+            "inputFieldName": "lastName",
+            "isRequired": true,
+            "placeholderText": "Enter last name",
+            "id" : "lastName",
+            "isSelectField": false,
+            "visible": true,
+            "editableInEditMode": false
+        },
+        {
+            "inputFieldLabel": "PhoneNumber",
+            "inputFieldType": "text",
+            "inputFieldName": "phoneNumber",
+            "isRequired": true,
+            "placeholderText": "Enter phone number",
+            "id" : "phoneNumber",
+            "isSelectField": false,
+            "visible": true
+        },
+        {
+            "inputFieldLabel": "Email",
+            "inputFieldType": "text",
+            "inputFieldName": "email",
+            "isRequired": true,
+            "placeholderText": "Enter email address",
+            "id" : "email",
+            "isSelectField": false,
+            "visible": true,
+            "editableInEditMode": false
+        },
+        {
+            "inputFieldLabel":"Grade",
+            "inputFieldType":"select",  
+            "inputFieldName":"grade",
+            "isRequired":true,
+            "placeholderText":"Select grade",
+            "id" : "grade",
+            "isSelectField": true,
+            "visible": true,
+            "editableInEditMode": true
+        },
+        {
+            "inputFieldLabel": "Role",
+            "inputFieldType": "radio",
+            "inputFieldName": "role",
+            "isRequired": true,
+            "placeholderText": "Select role",
+            "id" : "role",
+            "isSelectField": false,
+            "visible": true,
+            "editableInEditMode": false,
+            "radioOptions": [ 
+                { "label": "HR", "value": "HR" }, 
+                { "label": "TravelDeskExe", "value": "TravelDeskExe" }, 
+                { "label": "Employee", "value": "Employee" } 
+            ]
+        }
+
+    ]
+}
