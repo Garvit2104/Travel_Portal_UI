@@ -6,6 +6,7 @@ export enum EmployeeActionType  {
     REMOVE_EMPLOYEE = "REMOVE_EMPLOYEE",
     UPDATE_EMPLOYEE=  "UPDATE_EMPLOYEE",
     UPDATE_FIELD = "UPDATE_FIELD",
+    SET_FORM_DATA = "SET_FORM_DATA",
     RESET_FORM = "RESET_FORM"
 };
 
@@ -15,17 +16,25 @@ export type EmployeeAction =
 | { type: 'REMOVE_EMPLOYEE'; payload: number }
 | { type: EmployeeActionType.UPDATE_EMPLOYEE ; payload: Employee }
 | { type: EmployeeActionType.UPDATE_FIELD ; payload : {field: keyof Employee; value: string | number}}
-| { type: EmployeeActionType.RESET_FORM };
+| {type : EmployeeActionType.SET_FORM_DATA; payload : Employee}
+| { type: EmployeeActionType.RESET_FORM }; 
 
 
 export const EmployeeReducer = (state : Employee, action : EmployeeAction) : Employee =>{
     switch(action.type){
         case EmployeeActionType.UPDATE_FIELD:
             return {...state, [action.payload.field]: action.payload.value };
+        case EmployeeActionType.SET_FORM_DATA:
+            return{
+                ...state,
+                ...action.payload
+            };
         case EmployeeActionType.RESET_FORM:
             return EmployeeIniitalState;
         case EmployeeActionType.ADD_EMPLOYEE:
-            return {...state, ...action.payload};
+            return {...state, 
+                    ...action.payload
+                };
         case EmployeeActionType.REMOVE_EMPLOYEE:
             return {...state, employee_id: state.employee_id === action.payload ? 0 : state.employee_id};       
         default:

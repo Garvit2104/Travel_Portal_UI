@@ -115,7 +115,10 @@ const UserListComponent: React.FC = () => {
   const handleUpdate = (data: Employee) => {
     navigate(`/add-user/${data.employee_id}`, { state: data });
   };
-
+  const emptyRows =
+  page > 0
+    ? Math.max(0, (1 + page) * rowsPerPage - rows.length)
+    : 0;
   if (loading) {
     return <Loader />;
   }
@@ -180,6 +183,11 @@ const UserListComponent: React.FC = () => {
                     </TableCell>
                   </TableRow>
                 ))}
+                  {emptyRows > 0 && (
+                    <TableRow style={{ height: 53 * emptyRows }}>
+                      <TableCell colSpan={columns.length + 1} />
+                    </TableRow>
+                  )}
             </TableBody>
           </Table>
         </TableContainer>

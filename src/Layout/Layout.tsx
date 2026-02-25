@@ -1,10 +1,14 @@
-import { Box, Toolbar } from '@mui/material';
+import { Box, CssBaseline, useMediaQuery, useTheme } from '@mui/material';
 import React, { useState } from 'react';
 import Header from './Header';
 import Sidebar from './Sidebar';
 import { Outlet } from 'react-router-dom';
 
 const Layout = () =>{
+
+    const theme = useTheme();
+    const isDesktop = useMediaQuery(theme.breakpoints.up("sm"));
+
     const[open, setOpen] = useState(false);
 
     const toggleDrawer = () => {
@@ -13,15 +17,25 @@ const Layout = () =>{
     const closeDrawer = () => setOpen(false);
 
     return(
-        <Box sx= {{dispaly: "flex", minHeight:"100vh",bgcolor: "background.detail"}}>
-            <Header open={open} toggleDrawer={toggleDrawer} />
-            <Sidebar open={open} onClose={closeDrawer} />
-                <Box component="main" sx= {{flexGrow: 1, p:3, mt:8}}>
+        <Box sx= {{display: "flex", minHeight:"100vh"}}>
+            <CssBaseline />
+            <Header 
+                open={open} 
+                toggleDrawer={toggleDrawer} 
+            />
+            <Sidebar
+                open={open} 
+                onClose={closeDrawer}/>
+                <Box component="main" 
+                    sx={{
+                        mt: "64px",
+                        p: 3,
+                    }}>
                     <Box sx = {{ px: 2, py: 2}}>
                      <Outlet />
                     </Box>
                 </Box>
-        </Box>
+        </Box>  
     )   
 
 }

@@ -25,7 +25,7 @@ import { GradeService, Grade, EmployeeService } from "../HR_Service/HRServices";
 import { EmployeeActionType } from "../HR_Actions/EmployeeReducer";
 import { useNavigate } from 'react-router-dom';
 
-type formMode = "add" | "edit";
+type FormMode = "add" | "edit";
 
 const AddEmployee: React.FC = () => {
 
@@ -34,39 +34,64 @@ const AddEmployee: React.FC = () => {
   const { state, dispatch } = useContext(EmployeeContext);
   const { employeeId } = useParams<{ employeeId: string }>();
   
-  const [formType, setFormType] = useState<formMode>("add"); 
+  const [formType, setFormType] = useState<FormMode>("add"); 
   const [grades, setGrades] = useState<Grade[]>([]);
   const [originalGradeId, setOriginalGradeId] = useState<number | null>(null);
 
   const [isValid, setIsValid] = useState(false); 
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
-
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  
   const [successOpen, setSuccessOpen] = useState(false);
   const [updateOpen, setUpdateOpen] = useState(false);
-  const [errorOpen, setErrorOpen] = useState(false);
   const [warningOpen, setWarningOpen] = useState(false);
+  const [errorOpen, setErrorOpen] = useState(false);
   
 
-  const [touched, setTouched] = useState<Record<string, boolean>>({});
 
-  const data = location.state as  Employee | undefined;
+  const employeeFromList = location.state as  Employee | undefined;
 
+  const populateEmployeeState = (employee: Employee) =>{
+    dispatch({
+      type: EmployeeActionType.SET_FORM_DATA,
+      payload: {
+        employee_id: employee.employee_id,
+        first_name: employee.first_name,
+        last_name: employee.last_name,
+        phone_number: employee.phone_number,
+        email_address: employee.email_address,
+        current_grade_id: employee.current_grade_id,
+        role: employee.role
+      }
+    })
+  }
   // Side effect for edit mode initialization
   useEffect(() => {
-    if (employeeId || data){ 
-      setFormType("edit"); 
-      if (data){ 
-      dispatch({ type: EmployeeActionType.UPDATE_FIELD, payload : { field: "employee_id", value : data.employee_id }}); 
-      dispatch({ type: EmployeeActionType.UPDATE_FIELD, payload: { field: "first_name", value: data.first_name } }); 
-      dispatch({ type: EmployeeActionType.UPDATE_FIELD, payload: { field: "last_name", value: data.last_name }}); 
-      dispatch({ type: EmployeeActionType.UPDATE_FIELD, payload: { field: "phone_number", value: data.phone_number }}); 
-      dispatch({ type: EmployeeActionType.UPDATE_FIELD, payload: { field: "email_address", value: data.email_address }});
-      dispatch({ type: EmployeeActionType.UPDATE_FIELD, payload: { field: "current_grade_id", value: data.current_grade_id }}); 
-      dispatch({ type: EmployeeActionType.UPDATE_FIELD, payload: { field: "role", value: data.role } }); 
-      setOriginalGradeId(data.current_grade_id);
-      } 
-    } 
-  }, [employeeId, data, dispatch]);
+    const loadEmployee = async () =>{
+      if(!employeeId) return;
+      setFormType("edit");
+
+      // if data came from the employee list
+      if(employeeFromList){
+        populateEmployeeState(employeeFromList);
+        setOriginalGradeId(employeeFromList.current_grade_id);
+        return;
+      }
+
+      // fallback to API
+      try{
+        const employeeRecord = await fetch(`https://localhost:7260/api/Users/employee/${employeeId}`);
+        const data = await employeeRecord.json();
+        populateEmployeeState(data);
+        setOriginalGradeId(data.current_grade_id);
+      }catch(error){
+        console.log("Failed to load employee", error);
+      }
+    };
+       
+      loadEmployee();
+  }, [employeeId, employeeFromList]);
+
  // load grades once 
   useEffect(() => {
     const loadGrades = async () => {
@@ -84,14 +109,29 @@ const AddEmployee: React.FC = () => {
     const { name, value } = event.target;
     dispatch({ 
         type: EmployeeActionType.UPDATE_FIELD, 
-        payload: {field: name as keyof typeof state, value },
+        payload: {field: name as keyof  Employee, value },
     });
     
     setTouched((prev) => ({ ...prev, [name]: true }));
   };
   
+
+  const handleGradeChange = (e: any) => {
+  const value = Number(e.target.value);
+
+  dispatch({
+    type: EmployeeActionType.UPDATE_FIELD,
+    payload: { field: "current_grade_id", value },
+  });
+
+  setTouched((prev) => ({
+    ...prev,
+    current_grade_id: true,
+  }));
+  };
+
   const validateForm = () => {
-    const newErrors: { [key: string]: string } = {};
+    const newErrors: Record<string, string> = {};
     // first name
     if (!state.first_name.trim()) { 
       newErrors.first_name = "First name is required"; 
@@ -109,19 +149,19 @@ const AddEmployee: React.FC = () => {
       newErrors.email_address = "Email must be a valid cognizant.com address";
     }
     // DownGrade check
-    if (formType === "edit" && originalGradeId !== null && state.current_grade_id > originalGradeId) {
+    if (formType === "edit" && originalGradeId !== null && state.current_grade_id < originalGradeId) {
         newErrors.current_grade_id = "Grade cannot be downgraded";
     }
     // Role
-    if(state.role === "TravelDeskExe" && state.current_grade_id!= 1){
+    if(state.role === "TravelDeskExe" && state.current_grade_id!== 1){
       newErrors.current_grade_id = "TravelDeskExe must have grade 1";
     }
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    setIsValid(Object.keys(newErrors).length === 0);
   }
   // Re-run validation whenver state changes
   useEffect(() => {
-    setIsValid(validateForm());
+    validateForm();
   }, [state, formType, originalGradeId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -147,10 +187,11 @@ const AddEmployee: React.FC = () => {
       }
     };
 
-    const resetLocalValidation = () => {
-      setTouched({});        // clears touched for all fields
+    const resetForm = () => {
+      dispatch({type : EmployeeActionType.RESET_FORM});
+      setTouched({});        // clears touched for all file
       setErrors({});         // clears inline errors
-      setIsValid(false);     // prevents button enable and warning
+      setIsValid(false);     // prevents button enable and 
     };
     
 
@@ -161,7 +202,7 @@ const AddEmployee: React.FC = () => {
       <Box
         component="form"
         onSubmit={handleSubmit}
-        sx={{ p: 5, maxWidth: 600, margin: "auto", backgroundColor: "white", borderRadius: 2 }}
+        sx={{ p: 5, maxWidth: 500, margin: "auto", backgroundColor: "white", borderRadius: 2 }}
       >
         <Typography variant="h5" gutterBottom>
           {formType === "add" ? "Add New Employee" : "Update Employee Grades"}
@@ -224,9 +265,7 @@ const AddEmployee: React.FC = () => {
               labelId="grade-label"
               name="current_grade_id"
               value={state.current_grade_id || ""}
-              onChange={(e) =>
-                dispatch({ type: EmployeeActionType.UPDATE_FIELD, payload: {field: "current_grade_id", value: Number(e.target.value)} })      
-              }
+              onChange={handleGradeChange}
               label="Grade"
               displayEmpty
             >
@@ -234,9 +273,10 @@ const AddEmployee: React.FC = () => {
                 Select Grade
               </MenuItem>
               {grades.map((grade) => (
-                <MenuItem key={grade.id} 
+                <MenuItem 
+                          key={grade.id} 
                           value={grade.id}
-                          disabled={formType === "edit" && originalGradeId != null && grade.id < Number(originalGradeId)}>
+                          disabled={formType === "edit" && originalGradeId != null && grade.id < originalGradeId}>
                   {grade.name}
                 </MenuItem>
               ))}
@@ -285,9 +325,7 @@ const AddEmployee: React.FC = () => {
         open={successOpen}
         onClose={() => {
         setSuccessOpen(false);
-        dispatch({
-          type: EmployeeActionType.RESET_FORM
-        });
+        resetForm();
         navigate('/add-employee')
         }}
         title={modalMessages.AddEmployee.success.title}
@@ -298,9 +336,7 @@ const AddEmployee: React.FC = () => {
         open={updateOpen}
         onClose={() => {
           setUpdateOpen(false)
-          dispatch({
-            type: EmployeeActionType.RESET_FORM
-          });
+          resetForm();
           navigate('/employee-detail');
         }}
         title={modalMessages.AddEmployee.update.title}

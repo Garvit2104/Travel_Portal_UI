@@ -9,6 +9,8 @@ import HomeIcon from '@mui/icons-material/Home';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import { useNavigate } from 'react-router-dom';
 import { Box } from '@mui/material';
+
+
 interface HeaderProps {
     open: boolean;
     toggleDrawer: () => void;
@@ -17,7 +19,10 @@ const Header = ({open, toggleDrawer} : HeaderProps) =>{
     const navigate = useNavigate();
 
     return(
-        <AppBar position="fixed" color="primary" elevation={1}>
+        <AppBar position="fixed"  elevation={1}
+            sx={{bgcolor: "#1F2A44", zIndex: (theme) => theme.zIndex.drawer + 1,
+            }}
+        >
             <Toolbar>
                 <IconButton edge="start"
                             color="inherit"

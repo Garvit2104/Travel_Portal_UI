@@ -6,11 +6,12 @@ import SubwayIcon from '@mui/icons-material/Subway';
 import PendingIcon from '@mui/icons-material/Pending';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 
-const drawerWidth = 260;
+const drawerWidth = 240;
 
-interface SidebarProps {
-    open: boolean;
-    onClose: () => void;
+export interface SidebarProps {
+  open: boolean;
+  onClose: () => void;
+
 }
 const Sidebar = ({open, onClose} : SidebarProps) => {
     const navItems = [
@@ -25,20 +26,21 @@ const Sidebar = ({open, onClose} : SidebarProps) => {
     
 return (
     <Drawer
-      variant="temporary"
+      variant='temporary'
       open={open}
       onClose={onClose}
       ModalProps={{ keepMounted: true }} // better mobile performance
       sx={{
-        '& .MuiDrawer-paper': {
-          width: drawerWidth,
-          top: '68px', // height of AppBar with default Toolbar on desktop
-          height: 'calc(100% - 68px)',
-        },
-      }}
+    width: drawerWidth,
+    "& .MuiDrawer-paper": {
+      width: drawerWidth,
+      bgcolor: "#EEF2FF",
+      borderRight: "1px solid #D6DBF5",
+    },
+  }}
     >
-     
-      <List sx={{ px: 1 }}>
+
+      <List sx={{ px: 1, mt: 1.5 }}>
         {navItems.map((item) => {
           const isActive = location.pathname === item.path ||
             (item.path !== '/' && location.pathname.startsWith(item.path));
@@ -51,16 +53,41 @@ return (
               onClick={onClose} // close drawer after navigation
               selected={isActive}
               sx={{
-                mb: 0.5,
-                mt: 0.5,
-                borderRadius: 1,
-                '&.active, &[aria-selected="true"]': {
-                  bgcolor: 'action.selected',
+                mx: 1,
+                my: 0.3,            // ✅ smaller vertical spacing
+                py: 0.8,            // ✅ shrink height
+                borderRadius: 1.5,
+                fontSize: "0.9rem",
+                color: "#1F2A44",
+
+                "&:hover": {
+                  bgcolor: "#DCE3FF",
+                  transform: "scale(0.98)",   // ✅ hover shrink
+                },
+
+                "&.Mui-selected": {
+                  bgcolor: "#4F6DFF",
+                  color: "#FFFFFF",
+                  "& .MuiListItemIcon-root": {
+                    color: "#FFFFFF",
+                  },
                 },
               }}
             >
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.text} />
+              <ListItemIcon
+                sx={{
+                  minWidth: 36,       // ✅ shrink icon spacing
+                  color: "inherit",
+                }}
+              >
+                {item.icon}
+              </ListItemIcon>
+              <ListItemText primary={item.text} 
+                  primaryTypographyProps={{
+                  fontSize: "0.9rem", // ✅ text smaller
+                  fontWeight: 500,
+                }}
+              />
             </ListItemButton>
           );
         })}

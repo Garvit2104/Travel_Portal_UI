@@ -11,7 +11,7 @@ import { TravelPlannerAction } from './TravelPlanner_Mgmt/Actions/TravelPlannerR
 import RequestBudgetDetails from './TravelPlanner_Mgmt/Components/RequestBudgetDetails';
 import PendingRequestList from './TravelPlanner_Mgmt/Components/PendingRequestLists';
 import Layout from './Layout/Layout';
-
+import {ReservationContext, ReservationProvider} from './Reservations/Context/ReservationContext';
 
 function App() {
   const[open, setOpen] = useState(false);
@@ -23,6 +23,7 @@ function App() {
     <div className="App">
     <EmployeeProvider>
       <TravelPlannerProvider>
+        <ReservationProvider>
       <Router>
         <Routes>
           <Route element={<Layout />}>
@@ -36,6 +37,7 @@ function App() {
           </Route>
         </Routes>
       </Router>
+      </ReservationProvider>
       </TravelPlannerProvider>
     </EmployeeProvider>
 </div>
