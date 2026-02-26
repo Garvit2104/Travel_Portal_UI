@@ -30,6 +30,7 @@ export interface ReservationState {
   loading: boolean;
   error: string | null;
   successMessage: string | null;
+  selectedReservation: Reservation | null; // for details page
 }
 
 export const initialReservationState: ReservationState = {
@@ -38,4 +39,6 @@ export const initialReservationState: ReservationState = {
   loading: false,
   error: null,
   successMessage: null,
+  selectedReservation: null
+
 };

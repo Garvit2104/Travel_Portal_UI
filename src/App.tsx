@@ -12,6 +12,9 @@ import RequestBudgetDetails from './TravelPlanner_Mgmt/Components/RequestBudgetD
 import PendingRequestList from './TravelPlanner_Mgmt/Components/PendingRequestLists';
 import Layout from './Layout/Layout';
 import {ReservationContext, ReservationProvider} from './Reservations/Context/ReservationContext';
+import UploadReservation from './Reservations/Components/UploadReservation';
+import TrackReservation from './Reservations/Components/TrackReservation';
+import ReservationDetails from './Reservations/Components/ReservationDetails';
 
 function App() {
   const[open, setOpen] = useState(false);
@@ -34,6 +37,9 @@ function App() {
           <Route path= "/new-travel-request" element= {<NewTravelRequest/>} />
           <Route path= "/pending-travel-request" element= {<PendingRequestList/>} />
           <Route path='/travelplannerdetail/:id' element= {<RequestBudgetDetails/>} />
+          <Route path='/upload-reservation-docs' element = {<UploadReservation />} />
+          <Route path='/tracking-reservation-info' element = {<TrackReservation />} />
+          <Route path="/reservation-details/" element={<ReservationDetails />} />
           </Route>
         </Routes>
       </Router>

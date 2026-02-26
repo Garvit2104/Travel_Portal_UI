@@ -210,11 +210,12 @@ const UploadReservation = () => {
               size="large"
               disabled={state.loading}
             >
-              {state.loading ? (
+              {/* {state.loading ? (
                 <CircularProgress size={24} />
               ) : (
                 "Submit Reservation"
-              )}
+              )} */}
+                    SUBMIT
             </Button>
           </Grid>
 
