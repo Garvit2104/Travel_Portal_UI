@@ -39,7 +39,7 @@ function App() {
           <Route path='/travelplannerdetail/:id' element= {<RequestBudgetDetails/>} />
           <Route path='/upload-reservation-docs' element = {<UploadReservation />} />
           <Route path='/tracking-reservation-info' element = {<TrackReservation />} />
-          <Route path="/reservation-details/" element={<ReservationDetails />} />
+          <Route path="/reservation-details/:Id/" element={<ReservationDetails />} />
           </Route>
         </Routes>
       </Router>

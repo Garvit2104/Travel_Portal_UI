@@ -24,24 +24,7 @@ const TrackReservation = () => {
 
     dispatch({ type: "FETCH_RESERVATIONS_BY_TRAVELREQUEST_ID" });
 
-    // 👉 Call your API here and then dispatch SUCCESS or FAILURE
-    // Example:
-    /*
-    reservationService
-      .getReservationsByTravelRequestId(Number(travelRequestId))
-      .then((res) =>
-        dispatch({
-          type: "FETCH_RESERVATIONS_BY_TRAVELREQUEST_ID_SUCCESS",
-          payload: res.data,
-        })
-      )
-      .catch((err) =>
-        dispatch({
-          type: "FETCH_RESERVATIONS_BY_TRAVELREQUEST_ID_FAILURE",
-          payload: "Failed to fetch reservations",
-        })
-      );
-    */
+    // call API
   };
 
   return (
