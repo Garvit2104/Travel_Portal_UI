@@ -13,9 +13,13 @@ export type ReservationAction =
   | { type: "FETCH_RESERVATIONS_BY_TRAVELREQUEST_ID_SUCCESS"; payload: Reservation[] }
   | { type: "FETCH_RESERVATIONS_BY_TRAVELREQUEST_ID_FAILURE"; payload: string }
 
+  | { type: "FETCH_RESERVATION_BY_ID" }
+  | { type: "FETCH_RESERVATION_BY_ID_SUCCESS"; payload: Reservation }
+  | { type: "FETCH_RESERVATION_BY_ID_FAILURE"; payload: string }
+
+  | { type: "CLEAR_SELECTED_RESERVATION" }
+
   | { type: "CLEAR_MESSAGE" };
-
-
 
 export const reservationReducer = (state: ReservationState,action: ReservationAction): ReservationState => {
   switch (action.type) {
@@ -75,6 +79,35 @@ export const reservationReducer = (state: ReservationState,action: ReservationAc
         loading: false,
         error: action.payload
       };
+
+    case "FETCH_RESERVATION_BY_ID":
+      return {
+        ...state,
+        loading: true,
+        error: null,
+        selectedReservation: null
+      };
+
+    case "FETCH_RESERVATION_BY_ID_SUCCESS":
+      return {
+        ...state,
+        loading: false,
+        selectedReservation: action.payload
+      };
+
+    case "FETCH_RESERVATION_BY_ID_FAILURE":
+      return {
+        ...state,
+        loading: false,
+        error: action.payload
+      };
+
+    case "CLEAR_SELECTED_RESERVATION":
+      return {
+        ...state,
+        selectedReservation: null
+      };
+
 
     case "CLEAR_MESSAGE":
       return {
