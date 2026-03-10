@@ -9,14 +9,19 @@ const HomePage = () => {
   return (
     <Box
       sx={{
-        minHeight: "calc(100vh - 64px)", // remove header height
+      //  minHeight: "calc(100vh - 64px)", // remove header height
         backgroundImage: `url(${Dashboard})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
-     
+        // fix the image no scrollbar
+
       }}
-    >
+>
+<img src={Dashboard} alt="Dashboard" style={{  
+    width: '95vw', 
+    height: '80vh',
+    objectFit: 'cover' }} />
       
 
     </Box>
