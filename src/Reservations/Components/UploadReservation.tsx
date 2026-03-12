@@ -180,8 +180,6 @@ const handleSubmit = async (e: React.FormEvent) => {
         </Alert>
       )}
 
-      {/* noValidate disables browser's built-in HTML5 validation
-          so our custom validate() is the only thing that runs on submit */}
       <form onSubmit={handleSubmit} noValidate>
         <Grid container spacing={3}>
 
