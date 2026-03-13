@@ -25,6 +25,7 @@ import {
   ReimbursementContext,
   ReimbursementProvider,
 } from "./Reimbursemnet_Mgmt/Context/ReimbursementContext";
+import NewReimbursement from "./Reimbursemnet_Mgmt/Components/NewReimbursement";
 
 function App() {
   const [open, setOpen] = useState(false);
@@ -71,6 +72,10 @@ function App() {
                     <Route
                       path="/reservation-details/:Id/"
                       element={<ReservationDetails />}
+                    />
+                    <Route  
+                      path="/reimbursement-request"
+                      element={<NewReimbursement />}
                     />
                   </Route>
                 </Routes>
