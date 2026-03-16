@@ -3,8 +3,6 @@ export interface ReimbursementTypes{
     name: string;
 }
 
-
-
 export interface ReimbursementRequests {
     id?: number;
     travel_request_id: number;

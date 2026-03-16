@@ -1,6 +1,5 @@
 import { ReimbursementTypes, ReimbursementState, ReimbursementRequests } from "../States/ReimbursementStates";
 
-
 export type ReimbursementAction =
     | { type: "FETCH_REIMBURSEMENT_TYPES_REQUEST" }
     | { type: "SUCCESS_FETCH_REIMBURSEMENT_TYPES"; payload: ReimbursementTypes[] }

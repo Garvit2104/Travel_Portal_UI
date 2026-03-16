@@ -103,7 +103,7 @@ export default function NewTravelRequest() {
     useEffect(()=>{
         const getLocations = async () =>{
             try{
-                const response = await fetch("https://localhost:7221/api/Locations/locations");
+                const response = await fetch("http://localhost:5000/api/TP_Services/locations");
                 const data = await response.json();
                 setLocations(data);
             }catch{
@@ -118,7 +118,7 @@ export default function NewTravelRequest() {
         const dto = buildResponseDTO(state);
         let payload: any = dto;
         try{
-            const response = await fetch("https://localhost:7221/api/TravelRequests/travelrequests/new",{
+            const response = await fetch("http://localhost:5000/api/TP_Services/travelrequests/new",{
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
