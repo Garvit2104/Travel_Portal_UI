@@ -4,6 +4,9 @@ import HomeIcon from '@mui/icons-material/Home';
 import ListIcon from '@mui/icons-material/List';
 import SubwayIcon from '@mui/icons-material/Subway';
 import PendingIcon from '@mui/icons-material/Pending';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
+import TimelineIcon from '@mui/icons-material/Timeline';
+import FeedIcon from '@mui/icons-material/Feed';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 
 const drawerWidth = 240;
@@ -20,6 +23,9 @@ const Sidebar = ({open, onClose} : SidebarProps) => {
         { text: 'Employees Detail', path: '/employee-detail', icon: <ListIcon /> },
         { text: 'Create New Request', path: '/new-travel-request', icon: <SubwayIcon /> },
         { text: 'UnApproved Request', path: '/pending-travel-request', icon: <PendingIcon /> },
+        { text: 'Upload ResvDocument', path: '/upload-reservation-docs', icon: <UploadFileIcon />},
+        { text: 'Track Reservation', path: '/tracking-reservation-info', icon: <TimelineIcon />},
+        { text: 'Reimbursement Request', path: '/reimbursement-request', icon: <FeedIcon />}
       ];
 
     const location = useLocation();
@@ -31,12 +37,12 @@ return (
       onClose={onClose}
       ModalProps={{ keepMounted: true }} // better mobile performance
       sx={{
-    width: drawerWidth,
-    "& .MuiDrawer-paper": {
-      width: drawerWidth,
-      bgcolor: "#EEF2FF",
-      borderRight: "1px solid #D6DBF5",
-    },
+          width: drawerWidth,
+          "& .MuiDrawer-paper": {
+          width: drawerWidth,
+          bgcolor: "#EEF2FF",
+          borderRight: "1px solid #D6DBF5",
+      },
   }}
     >
 

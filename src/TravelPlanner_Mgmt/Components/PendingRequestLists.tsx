@@ -50,7 +50,7 @@ const PendingRequestList = () => {
     }
     setLoader(true);
     try {
-      const response = await fetch(`https://localhost:7221/api/TravelRequests/travelrequest/${numericHrId}/pending`);
+      const response = await fetch(`http://localhost:5000/api/TP_Services/travelrequest/${numericHrId}/pending`);
       if (!response.ok) {
         const text = await response.text().catch(() => '');
         throw new Error(`Fetch failed: ${response.status} ${response.statusText} - ${text}`);
@@ -83,7 +83,7 @@ const PendingRequestList = () => {
     });
     setApproved(true);
     try {
-      fetch(`https://localhost:7221/api/TravelRequests/travelrequests/${requestId}/update`, {
+      fetch(`http://localhost:5000/api/TravelRequests/TP_Services/${requestId}/update`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -101,7 +101,7 @@ const PendingRequestList = () => {
         });
         setApproved(true);
         try {
-          const response = await fetch(`https://localhost:7221/api/TravelRequests/travelrequests/${requestId}/update`, {
+          const response = await fetch(`http://localhost:5000/api/TP_Services/travelrequests/${requestId}/update`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
@@ -138,7 +138,7 @@ const PendingRequestList = () => {
       return;
     };
     try {
-      await fetch(`https://localhost:7221/api/TravelRequests/travelrequests/${selectedId}/update`, {
+      await fetch(`http://localhost:5000/api/TP_Services/travelrequests/${selectedId}/update`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -186,8 +186,8 @@ const PendingRequestList = () => {
 
   return (
     <>
-      <Paper elevation={3} sx={{ width: "50%", margin: "auto", padding: "10px", marginBottom: "20px", marginTop: "20px" }}>
-        <Box component="form" noValidate sx={{ mt: 3 }} onSubmit={handleSearchHRSubmit}>
+      <Paper elevation={3.5} sx={{ width: "40%", margin: "auto", padding: "10px", marginBottom: "20px", marginTop: "20px" }}>
+        <Box component="form" noValidate sx={{ mt: 2 }} onSubmit={handleSearchHRSubmit}>
           <InputBase
             sx={{ ml: 1, flex: 1 }}
             placeholder="Enter HR ID"
@@ -201,7 +201,7 @@ const PendingRequestList = () => {
         </Box>
       </Paper>
 
-      <Paper elevation={3} sx={{ width: "70%", margin: "auto", overflow: "hidden" }}>
+      <Paper elevation={3} sx={{ width: "100%", display: "flex", margin: "auto", overflow: "hidden" }}>
         <TableContainer sx={{ maxHeight: 500 }}>
           <Table stickyHeader aria-label="pending request list table">
             <TableHead >

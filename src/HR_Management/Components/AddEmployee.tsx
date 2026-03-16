@@ -80,8 +80,8 @@ const AddEmployee: React.FC = () => {
 
       // fallback to API
       try{
-        const employeeRecord = await fetch(`https://localhost:7260/api/Users/employee/${employeeId}`);
-        const data = await employeeRecord.json();
+        
+        const data = await EmployeeService.fetchEmployeeById(Number(employeeId));
         populateEmployeeState(data);
         setOriginalGradeId(data.current_grade_id);
       }catch(error){
@@ -197,8 +197,9 @@ const AddEmployee: React.FC = () => {
 
   return (
     <>
+    <Box sx = {{ display: "flex", justifyContext: "center", alignItems : "center", minHeight: "100vh"}}>
     <Container maxWidth="sm">
-    <Paper elevation={3} sx={{ p: 5, mt: 5 }}>
+    <Paper elevation={3} sx={{ p: 5 }}>
       <Box
         component="form"
         onSubmit={handleSubmit}
@@ -321,6 +322,7 @@ const AddEmployee: React.FC = () => {
       </Box>
       </Paper>
     </Container>
+  </Box>
       <CustomModal
         open={successOpen}
         onClose={() => {

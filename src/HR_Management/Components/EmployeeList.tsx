@@ -79,7 +79,7 @@ const UserListComponent: React.FC = () => {
   const handleDelete = async (employee_id: number) => {
     try {
       const response = await fetch(
-        `https://localhost:7260/api/Users/employee/${employee_id}`,
+        `http://localhost:5000/api/employees/${employee_id}`,
         {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
@@ -92,8 +92,9 @@ const UserListComponent: React.FC = () => {
           payload: employee_id,
         });
         setDeleteOpen(true);
-      }
+      }else{
       setErrorOpen(true);
+      }
     } catch (error) {
       console.error("Error deleting user:", error);
       setErrorOpen(true);
@@ -125,7 +126,7 @@ const UserListComponent: React.FC = () => {
 
   return (
     <>
-      <Paper sx={{ width: "70%", margin: "auto", overflow: "hidden" }}>
+      <Paper sx={{ width: "100%", margin: "auto", overflow: "hidden" }}>
         <TableContainer sx={{ maxHeight: 440 }}>
           <Table stickyHeader aria-label="user list table">
             <TableHead>
@@ -149,7 +150,7 @@ const UserListComponent: React.FC = () => {
                       </TableCell>
                     ))}
                     <TableCell className="action-btn"
-                    sx = {{display : "flex", gap: "4px", alignItems: "center"}}
+                    sx = {{ whiteSpace: "nowrap"}}
                     >
                       <span
                         style={{
