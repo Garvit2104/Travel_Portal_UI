@@ -5,23 +5,23 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs, { Dayjs } from "dayjs"; 
-import { TravelPlannerAction, TravelPlannerActionType } from '../Actions/TravelPlannerReducer';
+import { TravelPlannerActionType } from '../Actions/TravelPlannerReducer';
 import { TravelRequest } from '../TP_States/TravelPlannerStates';
-import { request } from 'http';
 import CustomModal from '../../Common/Modals';
 import modalMessages from '../Resources/TRequest.json';
 import { useNavigate } from 'react-router-dom';
-
-import { text } from 'stream/consumers';
-
 
 type Location = {
     id: number;
     name: string;
 }
+
+const PRIORITY_OPTIONS = ["Low", "Medium", "High"];
+
 export default function NewTravelRequest() {
     const {state, dispatch} = useContext(TravelPlannerContext);
     const navigate = useNavigate();
+
     const [locations, setLocations] = useState<Location[]>([]);
 
     const [successOpen, setSuccessOpen] = useState(false);
@@ -30,8 +30,10 @@ export default function NewTravelRequest() {
 
     const [errors, setErrors] = useState<{[key : string]: string}>({});
   
-    const toIntOrNull = (s : string) =>{
-        if(!s) return;
+    const [generatedRequestId, setGeneratedRequestId] = useState<number | null>(null);
+
+    const toIntOrNull = (s : string): number | null =>{
+        if(!s) return null;
 
         const numField = Number(s);
         return Number.isNaN(numField) ? null : numField;
@@ -39,21 +41,21 @@ export default function NewTravelRequest() {
 
     const toIsoOrNullFromDayjs = (date : Dayjs | null) =>(date ? date.toISOString() : null);
     
-    const buildResponseDTO = (form : TravelRequest) =>({
+    const buildRequestDTO = (form : TravelRequest) =>({
         raised_by_employee_id: toIntOrNull(form.raised_by_employee_id),
         to_be_approved_by_hr_id: toIntOrNull(form.to_be_approved_by_hr_id),
         location_id: toIntOrNull(form.location_id || ""),
         purpose_of_travel: form.purpose_of_travel?.trim(),
-        request_status: form.request_status?.trim(),
+        request_status: "New",
         Priority: form.Priority?.trim(),
 
         from_date: toIsoOrNullFromDayjs(form.from_date),
         to_date: toIsoOrNullFromDayjs(form.to_date),
-        RequestApprovedOn: form.RequestApprovedOn ? form.RequestApprovedOn.toISOString() : null,
+        RequestApprovedOn: null,
 
     })
     
-    const travelRequestValidation = () =>{
+    const travelRequestValidation = ():boolean =>{
         const newErrors: {[key : string]: string} = {};
         if(!String(state.raised_by_employee_id).trim()){
             newErrors.raised_by_employee_id = "Employee ID is required";
@@ -67,12 +69,21 @@ export default function NewTravelRequest() {
         if(!String(state.purpose_of_travel).trim()){
             newErrors.purpose_of_travel = "Purpose of Travel is required";
         }
-        if(!String(state.request_status).trim()){
-            newErrors.request_status = "Request Status is required";
-        }
+        
         if(!String(state.Priority).trim()){
             newErrors.Priority = "Priority is required";
-        }      
+        }     
+        
+        if (!state.from_date) {
+            newErrors.from_date = "From date is required";
+    }
+        if (!state.to_date) {
+            newErrors.to_date = "To date is required";
+        }
+        if (state.from_date && state.to_date && 
+            !dayjs(state.to_date).isAfter(dayjs(state.from_date))) {
+            newErrors.to_date = "To date must be after From date";
+        }
         setErrors(newErrors);
             return Object.keys(newErrors).length === 0;       
     }
@@ -93,6 +104,13 @@ export default function NewTravelRequest() {
         })
     }
 
+    const handlePriorityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch({
+      type: TravelPlannerActionType.UPDATE_FIELD,
+      payload: { field: "Priority", value: e.target.value }
+    });
+  };
+
     const handleDateChange = (field : keyof TravelRequest, value: Dayjs | null) =>{
         dispatch({  
             type: TravelPlannerActionType.UPDATE_FIELD, 
@@ -104,6 +122,7 @@ export default function NewTravelRequest() {
         const getLocations = async () =>{
             try{
                 const response = await fetch("http://localhost:5000/api/TP_Services/locations");
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 const data = await response.json();
                 setLocations(data);
             }catch{
@@ -115,37 +134,53 @@ export default function NewTravelRequest() {
 
     const handleCreateRequest = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const dto = buildResponseDTO(state);
-        let payload: any = dto;
+        const isValid = travelRequestValidation();
+        if(!isValid){
+            setWarningOpen(true);
+            return;
+        }
         try{
             const response = await fetch("http://localhost:5000/api/TP_Services/travelrequests/new",{
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(payload)
+                body: JSON.stringify(buildRequestDTO(state))
             });
             if(!response.ok){
                 const text = await response.text().catch(() => "");
                 console.error("Create travel request failed:", `${response.status} ${response.statusText} - ${text}`);
+                setErrorOpen(true);
                 return;
-
-            }         
+            } 
+            const result = await response.json().catch(() => null);
+            if (result?.travel_request_id) {
+                setGeneratedRequestId(result.travel_request_id);
+            }        
             setSuccessOpen(true);
             dispatch({ type: TravelPlannerActionType.RESET_FORM });
 
         } catch (error) {
-        console.log("Travel request failed to create", error);
-        setErrorOpen(true);
+            console.log("Travel request failed to create", error);
+            setErrorOpen(true);
         } 
     }
     
   return (
     <>
+    <Box sx={{
+        
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "flex-start",
+        alignItems: "center",
+        borderRadius: 5,
+        pt: 4,
+      }}>
     <Container maxWidth ="sm">
         <Paper elevation={3} style={{padding: '20px', marginTop: '20px'}}>
             <Typography component = "h1" variant="h5" align="center">
-                 Travel Request 
+                New Travel Request 
             </Typography>
             
             <Box component="form" noValidate sx={{ mt: 3 }} onSubmit={handleCreateRequest}>
@@ -231,19 +266,14 @@ export default function NewTravelRequest() {
                     </MenuItem>
                   ))}
                 </Select>
+                {errors.location_id && (
+                    <Typography variant="caption" color="error">
+                      {errors.location_id}
+                    </Typography>
+                  )}
               </FormControl>
                 </Box>
-                <Box sx = {{display: 'flex', gap: 2, mb: 2}}>
-                    <TextField
-                        name="request_status"
-                        label="Request Status"
-                        placeholder="Enter Request Status"
-                        value={state.request_status}
-                        onChange={handleChange}
-                        fullWidth
-                        required    
-                    />
-
+                  <Box>
                     <TextField
                         name="Priority"
                         label="Priority"
@@ -254,29 +284,30 @@ export default function NewTravelRequest() {
                         required    
                     />
                 </Box>
-            <Grid container spacing={4}
+                <Grid container spacing={4}
                 sx ={{
                     justifyContent: 'center',
                     alignItems: 'center',}}
                 >
-                <Grid size ={{xs:12, sm:8, md: 4}}>
+                <Grid size ={{xs:12, sm:8, md: 6, }}>
                 <Button fullWidth variant="contained" 
-                    color="primary" type="submit"
-                    
+                    color="primary" type="submit"      
                  >
                     CREATE
                 </Button>
-            </Grid>
-            </Grid>
-               
-            </Box>          
+                </Grid>
+                </Grid> 
+            </Box>         
         </Paper>
     </Container>
+    </Box>
           <CustomModal
           open={successOpen}
           onClose={() => setSuccessOpen(false)}
           title={modalMessages.CreateRequest.success.title}
-          message={modalMessages.CreateRequest.success.message}
+          message={generatedRequestId
+            ? `${modalMessages.CreateRequest.success.message} Request ID: ${generatedRequestId}`
+            :modalMessages.CreateRequest.success.message}
           color={modalMessages.CreateRequest.success.color}
         />
         <CustomModal
@@ -293,7 +324,7 @@ export default function NewTravelRequest() {
           message={modalMessages.CreateRequest.warning.message}
           color={modalMessages.CreateRequest.warning.color}
         />
-        <Button onClick={()=>navigate('/')}>HOME</Button>
+    
     </>
   )
 }

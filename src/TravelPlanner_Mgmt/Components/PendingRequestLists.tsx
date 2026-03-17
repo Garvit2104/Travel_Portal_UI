@@ -1,4 +1,4 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, InputBase, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow } from '@mui/material';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, InputBase, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Typography } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import React, { useEffect, useState, useContext } from 'react';
 import { TravelRequest, TravelRequestList } from '../TP_States/TravelPlannerStates';
@@ -19,7 +19,7 @@ type Column = {
 }
 const PendingRequestList = () => {
 
-  const { state, dispatch } = useContext(TravelPlannerContext);
+  const {  dispatch } = useContext(TravelPlannerContext);
 
   const navigate = useNavigate();
   const [loader, setLoader] = useState(false);
@@ -34,8 +34,7 @@ const PendingRequestList = () => {
 
   const [approved, setApproved] = useState(false);
   const [rejected, setRejected] = useState(false);
-  const [rejectMessage, setRejectMessage] = useState<string>('');
-
+  
   const handleHrInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setHrIdInput(event.target.value);
   }
@@ -53,7 +52,7 @@ const PendingRequestList = () => {
       const response = await fetch(`http://localhost:5000/api/TP_Services/travelrequest/${numericHrId}/pending`);
       if (!response.ok) {
         const text = await response.text().catch(() => '');
-        throw new Error(`Fetch failed: ${response.status} ${response.statusText} - ${text}`);
+        console.error(`Fetch failed: ${response.status} - ${text}`);
         setRowData([]);
         return;
       }
@@ -63,6 +62,7 @@ const PendingRequestList = () => {
       setRowData(normalized);
     } catch (error) {
       console.error("Error fetching pending requests for HR ID:", error);
+      setRowData([]);
     } finally {
       setLoader(false);
     }
@@ -76,60 +76,44 @@ const PendingRequestList = () => {
     return d.isValid() ? d.format('DD-MMM-YYYY') : '';
   };
 
-  const handleApprove = (requestId: number, approvedOn: Date, request_status: string) => {
-    dispatch({
-      type: TravelPlannerActionType.APPROVE_TRAVEL_REQUEST,
-      payload: { requestId, approvedOn, request_status: "Approved" }
-    });
-    setApproved(true);
-    try {
-      fetch(`http://localhost:5000/api/TravelRequests/TP_Services/${requestId}/update`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          request_status: "Approved",
-          RequestApprovedOn: approvedOn,
-          request_id: requestId
-        }),
-      });
-      const handleApprove = async (requestId: number, approvedOn: Date, request_status: string) => {
-        dispatch({
-          type: TravelPlannerActionType.APPROVE_TRAVEL_REQUEST,
-          payload: { requestId, approvedOn, request_status: "Approved" }
-        });
-        setApproved(true);
+  const handleApprove = async (requestId: number) => {
+    const approvedOn = new Date();
         try {
           const response = await fetch(`http://localhost:5000/api/TP_Services/travelrequests/${requestId}/update`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ request_status: "Approved", RequestApprovedOn: approvedOn, request_id: requestId }),
-          });
-
+            body: JSON.stringify({ 
+              request_status: "Approved", RequestApprovedOn: 
+              approvedOn, 
+              request_id: requestId 
+            }),
+          }
+        );
           if (!response.ok) {
             const text = await response.text().catch(() => '');
             console.error(`Approve failed: ${response.status} ${response.statusText} - ${text}`);
-
+            return;
           }
+          dispatch({
+        type: TravelPlannerActionType.APPROVE_TRAVEL_REQUEST,
+        payload: { requestId, approvedOn, request_status: "Approved" }
+      });
+      setApproved(true);
           navigate(`/travelplannerdetail/${requestId}`);
         } catch (error) {
           console.error("Error approving request:", error);
         }
-      };
-    } catch (error) {
-      console.error("Error approving request:", error);
-    }
-    navigate(`/travelplannerdetail/${requestId}`);
-  };
-
-
-
+    };
+  
   const openConfirmDialog = (request_id: number) => {
     setSelectedId(request_id);
     setConfirmOpen(true);
+  };
+
+  const handleReject = (requestId: number) => {
+    openConfirmDialog(requestId);
   };
 
   const confirmReject = async () => {
@@ -138,13 +122,19 @@ const PendingRequestList = () => {
       return;
     };
     try {
-      await fetch(`http://localhost:5000/api/TP_Services/travelrequests/${selectedId}/update`, {
+      const response = await fetch(`http://localhost:5000/api/TP_Services/travelrequests/${selectedId}/update`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ request_status: "Rejected" }),
       });
+      if (!response.ok) {
+        const text = await response.text().catch(() => '');
+        console.error(`Reject failed: ${response.status} - ${text}`);
+        setConfirmOpen(false);
+        return;
+      }
 
       dispatch({
         type: TravelPlannerActionType.REJECT_TRAVEL_REQUEST,
@@ -153,24 +143,24 @@ const PendingRequestList = () => {
       setRowData(prev =>
         prev.map(r => r.request_id === selectedId ? { ...r, request_status: 'Rejected' } : r)
       );
-      setRejectMessage(`Request ID ${selectedId} has been rejected.`);
+
       setRejected(true);
 
     }
     catch (error) {
       console.error("Error rejecting request:", error);
     }
-    setConfirmOpen(false);
-    setSelectedId(null);
+    finally{
+      setConfirmOpen(false);
+      setSelectedId(null);
+
+    }
   }
   const cancelReject = () => {
     setConfirmOpen(false);
-    navigate(0);
+   
   }
-  const handleReject = (requestId: number) => {
-    openConfirmDialog(requestId);
-
-  }
+  
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
   }
@@ -186,36 +176,67 @@ const PendingRequestList = () => {
 
   return (
     <>
-      <Paper elevation={3.5} sx={{ width: "40%", margin: "auto", padding: "10px", marginBottom: "20px", marginTop: "20px" }}>
-        <Box component="form" noValidate sx={{ mt: 2 }} onSubmit={handleSearchHRSubmit}>
+    <Box sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "flex-start",
+        pt: 4,
+        px: 2,
+      }}>
+        <Typography variant="h6" sx={{ fontWeight: 600, color: "#1a2a3a", mb: 2 }}>
+          Pending Travel Requests
+        </Typography>
+      <Paper
+          elevation={2}
+          component="form"
+          noValidate
+          onSubmit={handleSearchHRSubmit}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            width: '40%',
+            mb: 3,
+            borderRadius: 3,
+            px: 1,
+          }}
+        >
           <InputBase
             sx={{ ml: 1, flex: 1 }}
-            placeholder="Enter HR ID"
+            placeholder="Enter HR ID to load pending requests"
             value={hrIdInput}
             onChange={handleHrInputChange}
-            inputProps={{ 'aria-label': 'search google maps' }}
+            inputProps={{ 'aria-label': 'search by HR ID' }}
           />
           <IconButton type="submit" sx={{ p: '10px' }} aria-label="search">
             <SearchIcon />
           </IconButton>
-        </Box>
-      </Paper>
+        </Paper>
 
-      <Paper elevation={3} sx={{ width: "100%", display: "flex", margin: "auto", overflow: "hidden" }}>
+
+      <Paper elevation={3} sx={{ width: "90%", maxWidth: 1100, borderRadius:3,  overflow: "hidden" }}>
         <TableContainer sx={{ maxHeight: 500 }}>
           <Table stickyHeader aria-label="pending request list table">
             <TableHead >
               <TableRow>
                 {columns.map((col) => (
-                  <TableCell key={col.id} sx={{ fontWeight: "bold" }}>{col.label}</TableCell>
+                  <TableCell key={col.id} sx={{ fontWeight: "bold" }}>
+                    {col.label}
+                    </TableCell>
                 ))}
-                <TableCell sx={{ fontWeight: "bold" }}> Action </TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}> 
+                  Action 
+                  </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {Array.isArray(rowData) && rowData.length > 0 ? (
-                rowData.slice(page*rowsPerPage, page*rowsPerPage + rowsPerPage).map((row) => (
-                <TableRow hover key={row.request_id}>
+                rowData.slice(page*rowsPerPage, page*rowsPerPage + rowsPerPage).map((row, index) => (
+                <TableRow hover key={row.request_id} sx={{
+                          backgroundColor: index % 2 === 0 ? "#ffffff" : "#f7f9fb",
+                          "&:hover": { backgroundColor: "#eef2f7" },
+                        }}
+                >
                   {columns.map((col) => {
                     const raw = row[col.id as keyof TravelRequest];
                     const value = col.type === 'date' || raw instanceof Date ?
@@ -227,26 +248,38 @@ const PendingRequestList = () => {
                     )
                   }
                   )}
-                  <TableCell className='action-btn'>
-                    <span style={{ color: "green", cursor: "pointer", marginRight: "1px", padding: 0 }}>
-                      <Button variant="contained" size="small"
-                        onClick={() => {
-                          { handleApprove(row.request_id, new Date(), "Approved") }
-                        }}>
-                        Approve
-                      </Button>
-                    </span>
-                  </TableCell>
-                  <TableCell className='action-btn'>
-                    <span style={{ color: "red", cursor: "pointer", marginRight: "1px", padding: 0 }}>
-                      <Button variant="contained" size="small"
-                        onClick={() => {
-                          { handleReject(row.request_id) }
-                        }}>
-                        Reject
-                      </Button>
-                    </span>
-                  </TableCell>
+                  <TableCell sx={{ whiteSpace: "nowrap" }}>
+                          <Button
+                            variant="contained"
+                            size="small"
+                            // Disable if already actioned — prevents double approve/reject
+                            disabled={row.request_status !== 'New'}
+                            onClick={() => handleApprove(row.request_id)}
+                            sx={{
+                              mr: 1,
+                              backgroundColor: "#2e7d32",
+                              "&:hover": { backgroundColor: "#1b5e20" },
+                              textTransform: "none",
+                              fontSize: "0.78rem",
+                            }}
+                          >
+                            Approve
+                          </Button>
+                          <Button
+                            variant="contained"
+                            size="small"
+                            disabled={row.request_status !== 'New'}
+                            onClick={() => handleReject(row.request_id)}
+                            sx={{
+                              backgroundColor: "#c0392b",
+                              "&:hover": { backgroundColor: "#922b21" },
+                              textTransform: "none",
+                              fontSize: "0.78rem",
+                            }}
+                          >
+                            Reject
+                          </Button>
+                        </TableCell>
                 </TableRow>
               ))
             ): (
@@ -262,7 +295,7 @@ const PendingRequestList = () => {
         </TableContainer>
         <TablePagination
         component="div"
-        count={rowData != null ? rowData.length : 0}
+        count={rowData.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
@@ -270,6 +303,7 @@ const PendingRequestList = () => {
         rowsPerPageOptions={[5, 10, 25]}
       />
       </Paper>
+      </Box>
       <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)}>
         <DialogTitle>Confirm Reject</DialogTitle>
         <DialogContent>Are you sure you want to Reject the travel Request?</DialogContent>
@@ -290,12 +324,15 @@ const PendingRequestList = () => {
         open={rejected}
         onClose={() => setRejected(false)}
         title={modalMessages.RequestStatus.Reject.title}
-        message={rejectMessage || modalMessages.RequestStatus.Reject.message}
+        message={ modalMessages.RequestStatus.Reject.message}
         color={modalMessages.RequestStatus.Reject.color}
       />
-      <Button onClick={() => navigate('/')}>HOME</Button>
+     
     </>
   );
 };
 
 export default PendingRequestList;
+
+
+

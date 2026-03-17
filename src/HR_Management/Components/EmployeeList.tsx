@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -13,6 +14,7 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  Typography,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -36,7 +38,7 @@ type Column = {
 const UserListComponent: React.FC = () => {
   const navigate = useNavigate();
 
-  const { state, dispatch } = useContext(EmployeeContext);
+  const { dispatch } = useContext(EmployeeContext);
 
   const [rows, setRows] = useState<EmployeeList>([]);
   const [page, setPage] = useState(0);
@@ -58,6 +60,7 @@ const UserListComponent: React.FC = () => {
         setRows(data);
       } catch (error) {
         console.error("Error fetching user list:", error);
+        setErrorOpen(true);
       } finally {
         setLoading(false);
       }
@@ -78,23 +81,11 @@ const UserListComponent: React.FC = () => {
 
   const handleDelete = async (employee_id: number) => {
     try {
-      const response = await fetch(
-        `http://localhost:5000/api/employees/${employee_id}`,
-        {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      if (response.ok) {
-        setRows(rows.filter((row) => row.employee_id !== employee_id));
-        dispatch({
-          type: EmployeeActionType.REMOVE_EMPLOYEE,
-          payload: employee_id,
-        });
-        setDeleteOpen(true);
-      }else{
-      setErrorOpen(true);
-      }
+      await EmployeeService.deleteEmployee(employee_id);
+
+      setRows((prev) => prev.filter((row) => row.employee_id !== employee_id));
+      dispatch({type : EmployeeActionType.REMOVE_EMPLOYEE, payload: employee_id})
+      setDeleteOpen(true);
     } catch (error) {
       console.error("Error deleting user:", error);
       setErrorOpen(true);
@@ -126,26 +117,52 @@ const UserListComponent: React.FC = () => {
 
   return (
     <>
-      <Paper sx={{ width: "100%", margin: "auto", overflow: "hidden" }}>
+    <Box sx={{ 
+    p: 3, 
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",    
+    justifyContent: "flex-start"  
+    }}>
+       <Typography 
+      variant="h6" 
+      sx={{ 
+        fontWeight: 600, 
+        color: "#1a2a3a",
+        textAlign: "center",     
+        mb: 2,                  
+        width: "100%",           
+      }}
+    >
+      Employee List
+    </Typography>
+    
+      <Paper elevation = {2} sx={{ width: "90%", maxWidth: 900,  borderRadius: 3, margin: "auto", overflow: "hidden" }}>
         <TableContainer sx={{ maxHeight: 440 }}>
           <Table stickyHeader aria-label="user list table">
             <TableHead>
               <TableRow>
                 {columns.map((col) => (
-                  <TableCell key={col.Id} sx={{ fontWeight: "bold" }}>
+                  <TableCell key={col.Id} sx={{ fontWeight: 700, fontSize: "0.85rem", letterSpacing: 0.4 }}>
                     {col.label}
                   </TableCell>
                 ))}
-                <TableCell sx={{ fontWeight: "bold" }}> Action </TableCell>
+                <TableCell sx={{ fontWeight: 700, fontSize: "0.85rem", letterSpacing: 0.4 }}> 
+                  Action
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {rows
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row) => (
-                  <TableRow hover key={row.employee_id}>
+                .map((row, index) => (
+                  <TableRow hover key={row.employee_id} sx={{
+                        // FIX 11: Added alternating row stripes for readability
+                        backgroundColor: index % 2 === 0 ? "#ffffff" : "#f7f9fb",
+                        "&:hover": { backgroundColor: "#eef2f7" },
+                      }}>
                     {columns.map((col) => (
-                      <TableCell key={col.Id} sx={{ fontWeight: "normal" }}>
+                      <TableCell key={col.Id} sx={{ fontWeight: "normal", fontSize: "0.85rem"}}>
                         {row[col.Id as keyof Employee] || ""}
                       </TableCell>
                     ))}
@@ -200,17 +217,23 @@ const UserListComponent: React.FC = () => {
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
-          rowsPerPageOptions={[5, 10, 25]}
+          rowsPerPageOptions={[5, 10, 20]}
         />
+        </Paper>
+        </Box>
+        
 
-        <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)}>
-          <DialogTitle>Confirm Delete</DialogTitle>
+        <Dialog open={confirmOpen} 
+        onClose={() => setConfirmOpen(false)} 
+        PaperProps = {{sx : {borderRadius: 3}}}
+        >
+          <DialogTitle sx = {{fontWeight: 600}}>Confirm Delete</DialogTitle>
           <DialogContent>
-            Are you sure you want to delete this user?
-          </DialogContent>
-          <DialogActions>
+            Are you sure you want to delete this employee?
+          </DialogContent >
+          <DialogActions sx = {{pb: 2, px:3}}> 
             <Button onClick={() => setConfirmOpen(false)}>Cancel</Button>
-            <Button color="error" onClick={confirmDelete}>
+            <Button color="error" variant="contained" onClick={confirmDelete}>
               Delete
             </Button>
           </DialogActions>
@@ -224,8 +247,14 @@ const UserListComponent: React.FC = () => {
           errorMessage={modalMessages.AddEmployee.delete.errorMessage}
           color={modalMessages.AddEmployee.delete.color}
         />
-      </Paper>
-      <Button onClick={() => navigate("/")}>HOME</Button>
+      
+      <CustomModal
+        open={errorOpen}
+        onClose={() => setErrorOpen(false)}
+        title={modalMessages.AddEmployee.error.title}
+        message={modalMessages.AddEmployee.error.message}
+        color={modalMessages.AddEmployee.error.color}
+      />
     </>
   );
 };

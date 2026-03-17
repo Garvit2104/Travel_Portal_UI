@@ -1,0 +1,19 @@
+{
+  "Reservation": {
+    "success": {
+      "title": "Reservation Uploaded",
+      "message": "Reservation has been recorded successfully.",
+      "color": "green"
+    },
+    "error": {
+      "title": "Upload Failed",
+      "message": "Failed to upload reservation. Please try again.",
+      "color": "red"
+    },
+    "warning": {
+      "title": "Validation Error",
+      "message": "Please fill all required fields correctly before submitting.",
+      "color": "orange"
+    }
+  }
+}

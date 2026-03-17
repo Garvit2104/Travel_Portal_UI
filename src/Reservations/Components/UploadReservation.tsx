@@ -15,32 +15,41 @@ import {
 } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
 import { ReservationContext } from "../Context/ReservationContext";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { fetchReservationTypes, createReservation } from "../Services/ReservationService";
+import modalMessages from "../Resources/Reservation.json";
+import CustomModal from "../../Common/Modals";
+
+
 
 const UploadReservation = () => {
   const { state, dispatch } = useContext(ReservationContext);
   const { travelRequestId } = useParams();
+   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    reservationDoneByEmployeeId: "",
-    travelRequestId: travelRequestId || "",
-    reservationTypeId: "",
-    reservationDoneWithEntity: "",
-    reservationDate: "",
+    reservation_done_by_employee_id: "",
+    travel_request_id: travelRequestId || "",
+    reservation_type_id: "",
+    reservation_done_with_entity: "",
+    reservation_date: "",
     amount: "",
-    confirmationId: "",
+    confirmation_id: "",
     remarks: "",
   });
 
   const [file, setFile] = useState<File | null>(null);
    const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
+  const [successOpen, setSuccessOpen] = useState(false);
+  const [errorOpen, setErrorOpen] = useState(false);
+  const [warningOpen, setWarningOpen] = useState(false);
+
   useEffect(() => {
      const loadTypes = async () => {
       dispatch({ type: "FETCH_REQUEST_TYPE" });
       try {
-        const types = await fetchReservationTypes(); // calls GET /api/reservations/types
+        const types = await fetchReservationTypes(); 
         dispatch({ type: "FETCH_REQUEST_TYPE_SUCCESS", payload: types });
       } catch (err: any) {
         dispatch({ type: "FETCH_REQUEST_TYPE_FAILURE", payload: err.message });
@@ -59,14 +68,14 @@ const UploadReservation = () => {
   const handleTextChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-
+    const { name, value} = e.target;
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]: value,
     }));
     setValidationErrors((prev) => ({
       ...prev,
-      [e.target.name]: "", // Clear error message for this field on change
+      [name]: "", // Clear error message for this field on change
     }));
   };
 
@@ -74,7 +83,7 @@ const UploadReservation = () => {
       const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]: value,
     }));
     setValidationErrors((prev) => ({
       ...prev,
@@ -94,26 +103,24 @@ const UploadReservation = () => {
    const validate = (): boolean => {
     const errors: Record<string, string> = {};
 
-    if (!formData.reservationDoneByEmployeeId.trim())
-      errors.reservationDoneByEmployeeId = "Employee ID is required.";
+    if (!formData.reservation_done_by_employee_id.trim())
+      errors.reservation_done_by_employee_id = "Employee ID is required.";
 
-    if (!formData.travelRequestId.trim())
-      errors.travelRequestId = "Travel Request ID is required.";
+    if (!formData.travel_request_id.trim())
+      errors.travel_request_id = "Travel Request ID is required.";
 
-    if (!formData.reservationTypeId)
-      errors.reservationTypeId = "Please select a reservation type.";
+    if (!formData.reservation_type_id)
+      errors.reservation_type_id = "Please select a reservation type.";
 
-    if (!formData.reservationDoneWithEntity.trim())
+    if (!formData.reservation_done_with_entity.trim())
       errors.reservationDoneWithEntity = "Entity name is required.";
 
-    if (!formData.reservationDate)
+    if (!formData.reservation_date)
       errors.reservationDate = "Reservation date is required.";
 
     if (!formData.amount || Number(formData.amount) <= 0)
       errors.amount = "Amount must be a positive number.";
 
-    if (!formData.confirmationId.trim())
-      errors.confirmationId = "Confirmation ID is required.";
 
     if (!file) {
       errors.file = "Please upload a reservation document.";
@@ -128,7 +135,10 @@ const UploadReservation = () => {
   };
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
-  if (!validate()) return;
+  if (!validate()){
+    setWarningOpen(true);
+    return;
+  } 
   const data = new FormData();
   Object.entries(formData).forEach(([key, value]) => data.append(key, value));
   if (file) data.append("file", file); // "file" must match the C# parameter name
@@ -137,60 +147,44 @@ const handleSubmit = async (e: React.FormEvent) => {
   try {
     const message = await createReservation(data); // calls POST /api/reservations/add
     dispatch({ type: "CREATE_RESERVATION_SUCCESS", payload: message });
-
+    setSuccessOpen(true);
     // Reset the form back to empty on success
     setFormData({
-      reservationDoneByEmployeeId: "",
-      travelRequestId: travelRequestId || "",
-      reservationTypeId: "",
-      reservationDoneWithEntity: "",
-      reservationDate: "",
-      amount: "",
-      confirmationId: "",
-      remarks: "",
+        reservation_done_by_employee_id: "",
+        travel_request_id: travelRequestId || "",
+        reservation_type_id: "",
+        reservation_done_with_entity: "",
+        reservation_date: "",
+        amount: "",
+        confirmation_id: "",
+        remarks: "",
     });
     setFile(null);
   } catch (err: any) {
     dispatch({ type: "CREATE_RESERVATION_FAILURE", payload: err.message });
+    setErrorOpen(true);
   }
 };
 
 
   return (
+    <>
     <Box sx={{ p: 4, maxWidth: 800, mx: "auto" }}>
 
       <Typography variant="h5" fontWeight="bold" gutterBottom>
         Upload Reservation
       </Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-        Fill in the details below to record a reservation made for an employee.
-      </Typography>
-
-      {/* Success alert — displayed when API returns acknowledgement */}
-      {state.successMessage && (
-        <Alert severity="success" sx={{ mb: 2 }} onClose={() => dispatch({ type: "CLEAR_MESSAGE" })}>
-          {state.successMessage}
-        </Alert>
-      )}
-
-      {/* Error alert — displayed when API call fails */}
-      {state.error && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => dispatch({ type: "CLEAR_MESSAGE" })}>
-          {state.error}
-        </Alert>
-      )}
 
       <form onSubmit={handleSubmit} noValidate>
         <Grid container spacing={3}>
 
-          {/* ── Employee ID ──────────────────────────────────────────────────── */}
           <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               label="Employee ID"
               name="reservationDoneByEmployeeId"
               type="number"
-              value={formData.reservationDoneByEmployeeId}
+              value={formData.reservation_done_by_employee_id}
               onChange={handleTextChange}
               required
               error={!!validationErrors.reservationDoneByEmployeeId}
@@ -201,14 +195,14 @@ const handleSubmit = async (e: React.FormEvent) => {
           </Grid>
 
           {/* ── Travel Request ID ────────────────────────────────────────────── */}
-          {/* ✅ ADDED: This field was missing from the original form entirely */}
+         
           <Grid size={{ xs: 12, md: 6 }}>
             <TextField
               fullWidth
               label="Travel Request ID"
               name="travelRequestId"
               type="number"
-              value={formData.travelRequestId}
+              value={formData.travel_request_id}
               onChange={handleTextChange}
               required
               // If the ID came from the URL, lock it so user can't change it
@@ -220,13 +214,11 @@ const handleSubmit = async (e: React.FormEvent) => {
 
           {/* ── Reservation Type ─────────────────────────────────────────────── */}
           <Grid size={{ xs: 12, md: 6 }}>
-            {/* FormControl groups InputLabel + Select + FormHelperText together
-                so MUI can coordinate label position, error color, and spacing */}
             <FormControl fullWidth required error={!!validationErrors.reservationTypeId}>
               <InputLabel>Reservation Type</InputLabel>
               <Select
                 name="reservationTypeId"
-                value={formData.reservationTypeId}
+                value={formData.reservation_type_id}
                 onChange={handleSelectChange}
                 label="Reservation Type"
               >
@@ -236,7 +228,6 @@ const handleSubmit = async (e: React.FormEvent) => {
                   </MenuItem>
                 ))}
               </Select>
-              {/* Select does not support helperText directly — must use FormHelperText */}
               <FormHelperText>{validationErrors.reservationTypeId}</FormHelperText>
             </FormControl>
           </Grid>
@@ -248,7 +239,7 @@ const handleSubmit = async (e: React.FormEvent) => {
               label="Reserved With (Entity)"
               name="reservationDoneWithEntity"
               placeholder="e.g. IndiGo Airlines / Taj Hotel"
-              value={formData.reservationDoneWithEntity}
+              value={formData.reservation_done_with_entity}
               onChange={handleTextChange}
               required
               error={!!validationErrors.reservationDoneWithEntity}
@@ -266,7 +257,7 @@ const handleSubmit = async (e: React.FormEvent) => {
               InputLabelProps={{ shrink: true }}
               // shrink: true keeps the label above the field when a date is shown
               // without it the label overlaps the date value
-              value={formData.reservationDate}
+              value={formData.reservation_date}
               onChange={handleTextChange}
               required
               error={!!validationErrors.reservationDate}
@@ -287,21 +278,6 @@ const handleSubmit = async (e: React.FormEvent) => {
               inputProps={{ min: 1 }}
               error={!!validationErrors.amount}
               helperText={validationErrors.amount}
-            />
-          </Grid>
-
-          {/* ── Confirmation ID ──────────────────────────────────────────────── */}
-          <Grid size={{ xs: 12, md: 6 }}>
-            <TextField
-              fullWidth
-              label="Confirmation ID"
-              name="confirmationId"
-              placeholder="e.g. PNR123456"
-              value={formData.confirmationId}
-              onChange={handleTextChange}
-              required
-              error={!!validationErrors.confirmationId}
-              helperText={validationErrors.confirmationId}
             />
           </Grid>
 
@@ -332,7 +308,6 @@ const handleSubmit = async (e: React.FormEvent) => {
                 type="file"
                 hidden
                 accept="application/pdf"
-                // ✅ ADDED: accept limits the browser file picker to PDFs only
                 onChange={handleFileChange}
               />
             </Button>
@@ -374,6 +349,28 @@ const handleSubmit = async (e: React.FormEvent) => {
         </Grid>
       </form>
     </Box>
+    {/* <CustomModal
+        open={successOpen}
+        onClose={() => { setSuccessOpen(false); navigate('/'); }}
+        title={modalMessages.Reservation.success.title}
+        message={modalMessages.Reservation.success.message}
+        color={modalMessages.Reservation.success.color}
+      />
+      <CustomModal
+        open={errorOpen}
+        onClose={() => setErrorOpen(false)}
+        title={modalMessages.Reservation.error.title}
+        message={modalMessages.Reservation.error.message}
+        color={modalMessages.Reservation.error.color}
+      />
+      <CustomModal
+        open={warningOpen}
+        onClose={() => setWarningOpen(false)}
+        title={modalMessages.Reservation.warning.title}
+        message={modalMessages.Reservation.warning.message}
+        color={modalMessages.Reservation.warning.color}
+      /> */}
+      </>
   );
 };
 
