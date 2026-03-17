@@ -42,6 +42,7 @@ export const reservationReducer = (state: ReservationState,action: ReservationAc
     case "CREATE_RESERVATION_REQUEST":
       return {
         ...state,
+        loading: true,
         error: null,
         successMessage: null
       };
@@ -49,12 +50,14 @@ export const reservationReducer = (state: ReservationState,action: ReservationAc
     case "CREATE_RESERVATION_SUCCESS":
       return {
         ...state,
+        loading: false,
         successMessage: action.payload
       };
 
     case "CREATE_RESERVATION_FAILURE":
       return {
         ...state,
+        loading: false,
         error: action.payload
       };
 

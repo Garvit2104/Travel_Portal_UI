@@ -78,7 +78,6 @@ const AddEmployee: React.FC = () => {
         return;
       }
 
-      // fallback to API
       try{
         
         const data = await EmployeeService.fetchEmployeeById(Number(employeeId));
@@ -197,15 +196,15 @@ const AddEmployee: React.FC = () => {
 
   return (
     <>
-    <Box sx = {{ display: "flex", justifyContext: "center", alignItems : "center", minHeight: "100vh"}}>
+    <Box sx = {{ display: "flex", justifyContent: "center", alignItems : "center", height: "100vh"}}>
     <Container maxWidth="sm">
-    <Paper elevation={3} sx={{ p: 5 }}>
+    <Paper elevation={3} sx={{ p: 5, borderRadius: 3, backgroundColor: "#ffffff" }}>
       <Box
         component="form"
         onSubmit={handleSubmit}
-        sx={{ p: 5, maxWidth: 500, margin: "auto", backgroundColor: "white", borderRadius: 2 }}
+        sx={{maxWidth: 500, margin: "auto"}}
       >
-        <Typography variant="h5" gutterBottom>
+        <Typography variant="h5" gutterBottom sx = {{textAlign: "center", fontWeight: 600, color: "#1a2a3a", mb: 3, fontFamily: "'Segoe UI', system-ui, sans-serif",}}>
           {formType === "add" ? "Add New Employee" : "Update Employee Grades"}
           </Typography>
         <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
@@ -312,6 +311,8 @@ const AddEmployee: React.FC = () => {
         <Button fullWidth variant="contained" 
           color="primary" type="submit"
           disabled={!isValid}
+          sx={{mt: 1, py: 1.2, fontWeight: 600, letterSpacing: 0.5, backgroundColor: "#1e4d8c", "&:hover": { backgroundColor: "#164080" }
+          }}
         >
           {
           formType === "add" ? "SUBMIT" : " UPDATE"
