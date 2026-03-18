@@ -49,7 +49,7 @@ const PendingRequestList = () => {
     }
     setLoader(true);
     try {
-      const response = await fetch(`http://localhost:5000/api/TP_Services/travelrequest/${numericHrId}/pending`);
+      const response = await fetch(`http://localhost:5000/api/TP_Services/travelrequests/${numericHrId}/pending`);
       if (!response.ok) {
         const text = await response.text().catch(() => '');
         console.error(`Fetch failed: ${response.status} - ${text}`);

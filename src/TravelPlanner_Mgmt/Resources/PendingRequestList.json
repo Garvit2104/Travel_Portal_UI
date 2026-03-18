@@ -16,7 +16,7 @@
             "id": "to_date", "label": "End Date", "type" : "date", "sorting": true
         },
         {
-            "id": "location_id", "label": "Destination", "type" : "number", "sorting": true
+            "id": "location_name", "label": "Destination", "type" : "string", "sorting": true
         },
         {
             "id": "purpose_of_travel", "label": "Purpose", "type" : "text", "sorting": false

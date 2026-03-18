@@ -1,6 +1,6 @@
 import { Reservation, ReservationTypes } from "../States/ReservationStates";
 
-const BASE_URL = "https://localhost:7174/api/reservations";
+const BASE_URL = "http://localhost:5000/api/Reservation_Services";
 
 // ======================================
 // GET Reservation Types

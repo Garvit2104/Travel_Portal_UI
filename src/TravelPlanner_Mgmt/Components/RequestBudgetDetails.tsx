@@ -33,21 +33,21 @@ const RequestBudgetDetails =()=> {
       setLoader(true);
      
       try{
-        const response = await fetch(`https://localhost:7221/api/TravelRequests/travelrequests/calculatebudget/${id}`,{
+        const response = await fetch(`http://localhost:5000/api/TP_Services/travelrequests/calculatebudget?travelRequestId=${id}`,{
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({}),
         });
-        const raw = await response.text().catch(() => '');
+        
         if(!response.ok){
           const text = await response.text().catch(() => '');
             throw new Error(`Budget POST failed: ${response.status} ${response.statusText} - ${text}`);
         }
 
         const data: BudgetResponse = await response.json();
-        const num = Number(raw);
+        const num = Number(data);
         if(Number.isNaN(num)){
-          console.error('Unexpected non-numeric budget response:', raw);
+          console.error('Unexpected non-numeric budget response:', data);
           throw new Error('Budget response is not a numeric value.');
 
         }

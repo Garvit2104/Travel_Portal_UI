@@ -1,26 +1,25 @@
 export interface ReservationTypes {
-  typeId: number;
-  typeName: string;
+  type_id: number;
+  type_name: string;
 }
 
 export interface ReservationDocs {
   id: number;
-  reservationId: number;
-  documentURL: string;
+  reservation_id: number;
+  document_url: string;
 }
-
 
 export interface Reservation {
   id?: number;
-  reservationDoneByEmployeeId: number;
-  travelRequestId: number;
-  reservationTypeId: number;
-  reservationDoneWithEntity: string;
-  reservationDate: string;
+  reservation_done_by_employee_id: number;
+  travel_request_id: number;
+  reservation_type_id: number;
+  reservation_done_with_entity: string;
+  reservation_date: string;
   amount: number;
-  confirmationId: string;
+  // confirmationId: string;
   remarks: string;
-  createdOn?: string;
+  created_on?: string;
   documents?: ReservationDocs[];
 }
 

@@ -1,5 +1,5 @@
 {
-  "Reservation": {
+  "AddReservation": {
     "success": {
       "title": "Reservation Uploaded",
       "message": "Reservation has been recorded successfully.",

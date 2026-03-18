@@ -39,7 +39,7 @@ export default function NewTravelRequest() {
         return Number.isNaN(numField) ? null : numField;
     };
 
-    const toIsoOrNullFromDayjs = (date : Dayjs | null) =>(date ? date.toISOString() : null);
+    const toIsoOrNullFromDayjs = (date : Dayjs | null) =>(date ? date.format("YYYY-MM-DD") : null);
     
     const buildRequestDTO = (form : TravelRequest) =>({
         raised_by_employee_id: toIntOrNull(form.raised_by_employee_id),
@@ -139,6 +139,7 @@ export default function NewTravelRequest() {
             setWarningOpen(true);
             return;
         }
+
         try{
             const response = await fetch("http://localhost:5000/api/TP_Services/travelrequests/new",{
                 method: "POST",

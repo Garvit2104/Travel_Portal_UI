@@ -46,6 +46,7 @@ const UserListComponent: React.FC = () => {
 
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [errorOpen, setErrorOpen] = useState(false);
+  const [deleteErrorOpen, setDeleteErrorOpen] = useState(false);
 
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -88,7 +89,7 @@ const UserListComponent: React.FC = () => {
       setDeleteOpen(true);
     } catch (error) {
       console.error("Error deleting user:", error);
-      setErrorOpen(true);
+      setDeleteErrorOpen(true);
     }
   };
 
@@ -255,6 +256,13 @@ const UserListComponent: React.FC = () => {
         message={modalMessages.AddEmployee.error.message}
         color={modalMessages.AddEmployee.error.color}
       />
+      <CustomModal
+          open={deleteErrorOpen}
+          onClose={() => setDeleteErrorOpen(false)}
+          title={modalMessages.AddEmployee.deleteError.title}
+          message={modalMessages.AddEmployee.deleteError.message}
+          color={modalMessages.AddEmployee.delete.color}
+        />
     </>
   );
 };

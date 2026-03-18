@@ -65,9 +65,7 @@ const UploadReservation = () => {
       }
     }, [state.successMessage, state.error, dispatch]);
 
-  const handleTextChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value} = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -80,7 +78,7 @@ const UploadReservation = () => {
   };
 
   const handleSelectChange = (e: SelectChangeEvent) => {
-      const { name, value } = e.target;
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -112,8 +110,8 @@ const UploadReservation = () => {
     if (!formData.reservation_type_id)
       errors.reservation_type_id = "Please select a reservation type.";
 
-    if (!formData.reservation_done_with_entity.trim())
-      errors.reservationDoneWithEntity = "Entity name is required.";
+    // if (!formData.reservation_done_with_entity.trim())
+    //   errors.reservationDoneWithEntity = "Entity name is required.";
 
     if (!formData.reservation_date)
       errors.reservationDate = "Reservation date is required.";
@@ -182,7 +180,7 @@ const handleSubmit = async (e: React.FormEvent) => {
             <TextField
               fullWidth
               label="Employee ID"
-              name="reservationDoneByEmployeeId"
+              name="reservation_done_by_employee_id"
               type="number"
               value={formData.reservation_done_by_employee_id}
               onChange={handleTextChange}
@@ -200,7 +198,7 @@ const handleSubmit = async (e: React.FormEvent) => {
             <TextField
               fullWidth
               label="Travel Request ID"
-              name="travelRequestId"
+              name="travel_request_id"
               type="number"
               value={formData.travel_request_id}
               onChange={handleTextChange}
@@ -217,14 +215,14 @@ const handleSubmit = async (e: React.FormEvent) => {
             <FormControl fullWidth required error={!!validationErrors.reservationTypeId}>
               <InputLabel>Reservation Type</InputLabel>
               <Select
-                name="reservationTypeId"
+                name="reservation_type_id"
                 value={formData.reservation_type_id}
                 onChange={handleSelectChange}
                 label="Reservation Type"
               >
                 {state.reservationTypes.map((type) => (
-                  <MenuItem key={type.typeId} value={type.typeId}>
-                    {type.typeName}
+                  <MenuItem key={type.type_id} value={type.type_id}>
+                    {type.type_name}
                   </MenuItem>
                 ))}
               </Select>
@@ -237,7 +235,7 @@ const handleSubmit = async (e: React.FormEvent) => {
             <TextField
               fullWidth
               label="Reserved With (Entity)"
-              name="reservationDoneWithEntity"
+              name="reservation_done_with_entity"
               placeholder="e.g. IndiGo Airlines / Taj Hotel"
               value={formData.reservation_done_with_entity}
               onChange={handleTextChange}
@@ -253,7 +251,7 @@ const handleSubmit = async (e: React.FormEvent) => {
               fullWidth
               label="Reservation Date"
               type="date"
-              name="reservationDate"
+              name="reservation_date"
               InputLabelProps={{ shrink: true }}
               // shrink: true keeps the label above the field when a date is shown
               // without it the label overlaps the date value
@@ -349,27 +347,27 @@ const handleSubmit = async (e: React.FormEvent) => {
         </Grid>
       </form>
     </Box>
-    {/* <CustomModal
+     <CustomModal
         open={successOpen}
         onClose={() => { setSuccessOpen(false); navigate('/'); }}
-        title={modalMessages.Reservation.success.title}
-        message={modalMessages.Reservation.success.message}
-        color={modalMessages.Reservation.success.color}
+        title={modalMessages.AddReservation.success.title}
+        message={modalMessages.AddReservation.success.message}
+        color={modalMessages.AddReservation.success.color}
       />
       <CustomModal
         open={errorOpen}
         onClose={() => setErrorOpen(false)}
-        title={modalMessages.Reservation.error.title}
-        message={modalMessages.Reservation.error.message}
-        color={modalMessages.Reservation.error.color}
+        title={modalMessages.AddReservation.error.title}
+        message={modalMessages.AddReservation.error.message}
+        color={modalMessages.AddReservation.error.color}
       />
       <CustomModal
         open={warningOpen}
         onClose={() => setWarningOpen(false)}
-        title={modalMessages.Reservation.warning.title}
-        message={modalMessages.Reservation.warning.message}
-        color={modalMessages.Reservation.warning.color}
-      /> */}
+        title={modalMessages.AddReservation.warning.title}
+        message={modalMessages.AddReservation.warning.message}
+        color={modalMessages.AddReservation.warning.color}
+      /> 
       </>
   );
 };

@@ -57,7 +57,7 @@ const ReservationDetails = () => {
       // programmatically clicks a hidden <a> tag to trigger the download
       await downloadReservationDocument(
         reservationId,
-        `Reservation_${reservationId}_${state.selectedReservation?.reservationDoneWithEntity}.pdf`
+        `Reservation_${reservationId}_${state.selectedReservation?.reservation_done_with_entity}.pdf`
       );
     } catch (err: any) {
       // ✅ FIX: Original used alert() for download errors — replaced with
@@ -122,8 +122,8 @@ const r = state.selectedReservation;
             <Chip
               label={
                 state.reservationTypes.find(
-                  (t) => t.typeId === r.reservationTypeId
-                )?.typeName ?? "Unknown"
+                  (t) => t.type_id === r.reservation_type_id
+                )?.type_name ?? "Unknown"
               }
               color="primary"
               variant="outlined"
@@ -132,17 +132,17 @@ const r = state.selectedReservation;
           </Box>
         <Divider sx={{ mb: 2 }} />
          <Typography variant="body1" sx={{ mb: 1 }}>
-            <strong>Travel Request ID:</strong> {r.travelRequestId}
+            <strong>Travel Request ID:</strong> {r.travel_request_id}
           </Typography>
 
           <Typography variant="body1" sx={{ mb: 1 }}>
-            <strong>Entity:</strong> {r.reservationDoneWithEntity}
+            <strong>Entity:</strong> {r.reservation_done_with_entity}
           </Typography>
 
           <Typography variant="body1" sx={{ mb: 1 }}>
             <strong>Date:</strong>{" "}
             {/* ✅ FIX: Raw ISO string formatted to readable date e.g. 15 March 2024 */}
-            {new Date(r.reservationDate).toLocaleDateString("en-IN", {
+            {new Date(r.reservation_date).toLocaleDateString("en-IN", {
               day: "2-digit",
               month: "long",
               year: "numeric",
@@ -155,19 +155,17 @@ const r = state.selectedReservation;
             ₹{r.amount.toLocaleString("en-IN")}
           </Typography>
 
-          <Typography variant="body1" sx={{ mb: 1 }}>
-            <strong>Confirmation ID:</strong> {r.confirmationId}
-          </Typography>
+          
           {r.remarks && (
             <Typography variant="body1" sx={{ mb: 1 }}>
               <strong>Remarks:</strong> {r.remarks}
             </Typography>
           )}
 
-          {r.createdOn && (
+          {r.created_on && (
             <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
               <strong>Created On:</strong>{" "}
-              {new Date(r.createdOn).toLocaleDateString("en-IN", {
+              {new Date(r.created_on).toLocaleDateString("en-IN", {
                 day: "2-digit",
                 month: "short",
                 year: "numeric",

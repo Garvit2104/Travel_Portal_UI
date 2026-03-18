@@ -143,8 +143,8 @@ const TrackReservation = () => {
                     <Chip
                       label={
                         state.reservationTypes.find(
-                          (t) => t.typeId === reservation.reservationTypeId
-                        )?.typeName ?? "Unknown"
+                          (t) => t.type_id === reservation.reservation_type_id
+                        )?.type_name ?? "Unknown"
                       }
                       size="small"
                       color="primary"
@@ -153,14 +153,14 @@ const TrackReservation = () => {
                     />
 
                    <Typography variant="body2" color="text.secondary">
-                      <strong>Entity:</strong> {reservation.reservationDoneWithEntity}
+                      <strong>Entity:</strong> {reservation.reservation_done_with_entity}
                     </Typography>
 
                   <Typography variant="body2" color="text.secondary">
                       <strong>Date:</strong>{" "}
                       {/* ✅ FIX: Original displayed raw ISO date string (e.g. 2024-03-15T00:00:00)
                           Now formatted to a readable format e.g. 15 March 2024 */}
-                      {new Date(reservation.reservationDate).toLocaleDateString("en-IN", {
+                      {new Date(reservation.reservation_date).toLocaleDateString("en-IN", {
                         day: "2-digit",
                         month: "long",
                         year: "numeric",
@@ -171,11 +171,6 @@ const TrackReservation = () => {
                     <strong>Amount:</strong> ₹ {reservation.amount.toLocaleString("en-IN")}
                   </Typography>
 
-                  <Typography variant="body2" color="text.secondary">
-                      <strong>Confirmation ID:</strong> {reservation.confirmationId}
-                  </Typography>
-
-              
                 </CardContent>
 
                 <CardActions>
