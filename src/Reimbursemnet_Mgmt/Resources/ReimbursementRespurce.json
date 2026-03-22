@@ -1,0 +1,31 @@
+{
+      "AddReimbursement": {
+        "success": {
+          "title": "Success",
+          "message": "Reimbursement submitted successfully!",
+          "color": "green"
+        },
+       
+        "error": {
+          "title": "Error",
+          "message": "Failed to add Reimbursement. Please try again.",
+          "color": "red"
+        },
+        "warning": {
+          "title": "Validation Error",
+          "message": "Please fill all required fields correctly.",
+          "color": "orange"
+        },
+        "approved": {
+      "title": "Approved!",
+      "message": "The reimbursement has been approved successfully.",
+      "color": "green"
+    },
+    "rejected": {
+      "title": "Rejected",
+      "message": "The reimbursement has been rejected.",
+      "color": "red"
+    }
+    
+    }
+}

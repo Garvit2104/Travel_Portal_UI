@@ -17,7 +17,7 @@ const Layout = () =>{
     const closeDrawer = () => setOpen(false);
 
     return(
-        <Box sx= {{display: "flex", minHeight:"100vh"}}>
+        <Box>
             <CssBaseline />
             <Header 
                 open={open} 

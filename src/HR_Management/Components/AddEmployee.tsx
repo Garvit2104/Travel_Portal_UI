@@ -194,174 +194,174 @@ const AddEmployee: React.FC = () => {
     };
     
 
-  return (
-    <>
-    <Box sx = {{ display: "flex", justifyContent: "center", alignItems : "center", height: "100vh"}}>
-    <Container maxWidth="sm">
-    <Paper elevation={3} sx={{ p: 5, borderRadius: 3, backgroundColor: "#ffffff" }}>
-      <Box
-        component="form"
-        onSubmit={handleSubmit}
-        sx={{maxWidth: 500, margin: "auto"}}
-      >
-        <Typography variant="h5" gutterBottom sx = {{textAlign: "center", fontWeight: 600, color: "#1a2a3a", mb: 3, fontFamily: "'Segoe UI', system-ui, sans-serif",}}>
-          {formType === "add" ? "Add New Employee" : "Update Employee Grades"}
-          </Typography>
-        <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
-          <TextField
-            name="first_name"
-            label="First Name"
-            value={state.first_name}
-            onChange={handleChange}
-            fullWidth
-            required
-            error={touched.first_name && !!errors.first_name}
-            helperText={touched.first_name ? errors.first_name : ""}
-            disabled={formType === "edit"}
-            
-          />
-          <TextField
-            name="last_name"
-            label="Last Name"
-            value={state.last_name}
-            onChange={handleChange}
-            fullWidth
-            required
-            error={touched.last_name && !!errors.last_name}
-            helperText={touched.last_name ? errors.last_name : ""}
-            disabled={formType === "edit"}
-          />
-        </Box>
-        <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
-          <TextField
-            name="phone_number"
-            label="Phone Number"
-            value={state.phone_number}
-            onChange={handleChange}
-            fullWidth
-            required
-            error={touched.phone_number && !!errors.phone_number}
-            helperText={touched.phone_number ? errors.phone_number : ""}
-            disabled={formType === "edit"}
-          />
-          <TextField
-            name="email_address"
-            label="Email"
-            value={state.email_address}
-            onChange={handleChange}
-            fullWidth
-            required
-            error={touched.email_address && !!errors.email_address}
-            helperText={touched.email_address ? errors.email_address : ""}
-            disabled={formType === "edit"}
-          />
-        </Box>
-        <Box sx={{ mb: 2 }}>
-          <FormControl fullWidth variant="outlined" 
-            error={touched.current_grade_id && !!errors.current_grade_id} 
-          >
-            <InputLabel id="grade-label">Grade</InputLabel>
-            <Select
-              labelId="grade-label"
-              name="current_grade_id"
-              value={state.current_grade_id || ""}
-              onChange={handleGradeChange}
-              label="Grade"
-              displayEmpty
-            >
-              <MenuItem value="" disabled>
-                Select Grade
-              </MenuItem>
-              {grades.map((grade) => (
-                <MenuItem 
-                          key={grade.id} 
-                          value={grade.id}
-                          disabled={formType === "edit" && originalGradeId != null && grade.id < originalGradeId}>
-                  {grade.name}
-                </MenuItem>
-              ))}
+    return (
+      <>
+      <Box sx = {{ display: "flex", justifyContent: "center", alignItems : "center", height: "100vh"}}>
+      <Container maxWidth="sm">
+      <Paper elevation={3} sx={{ p: 5, borderRadius: 3, backgroundColor: "#ffffff" }}>
+        
+          <Typography variant="h5" fontWeight="bold" gutterBottom sx = {{textAlign: "center", mb: 3}}>
+            {formType === "add" ? "Add New Employee" : "Update Employee Grades"}
+            </Typography>
+            <form onSubmit={handleSubmit}>
+              <Grid container spacing={2}>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <TextField
+              name="first_name"
+              label="First Name"
+              value={state.first_name}
+              onChange={handleChange}
+              fullWidth
+              required
+              error={touched.first_name && !!errors.first_name}
+              helperText={touched.first_name ? errors.first_name : ""}
+              disabled={formType === "edit"}
               
-            </Select>
-            {touched.current_grade_id && errors.current_grade_id &&(
-              <Typography variant="caption" color="error">
-                {errors.current_grade_id}
-              </Typography>
-            )}
-          </FormControl>
-        </Box>
-        <Typography variant="subtitle1">Select Role</Typography>
-        <RadioGroup
-          row
-          name="role"
-          value={state.role}
-          onChange={(e) => dispatch({ type: EmployeeActionType.UPDATE_FIELD, payload: {field: "role", value: e.target.value} })}
-        >
-          <FormControlLabel value="HR" control={<Radio />} label="HR" disabled={formType === "edit"} />
-          <FormControlLabel value="TravelDeskExe" control={<Radio />} label="TravelDeskExe" disabled={formType === "edit"} />
-          <FormControlLabel value="Employee" control={<Radio />} label="Employee" disabled={formType === "edit"} />
-        </RadioGroup>
-    
-        <Grid container spacing={4}
-        sx ={{
-          justifyContent: 'center',
-        }}
-        >
-     
-      <Grid size ={{xs:12, sm:8, md: 4}}>
-        <Button fullWidth variant="contained" 
-          color="primary" type="submit"
-          disabled={!isValid}
-          sx={{mt: 1, py: 1.2, fontWeight: 600, letterSpacing: 0.5, backgroundColor: "#1e4d8c", "&:hover": { backgroundColor: "#164080" }
-          }}
-        >
-          {
-          formType === "add" ? "SUBMIT" : " UPDATE"
-          }
-        </Button>
+            />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+            <TextField
+              name="last_name"
+              label="Last Name"
+              value={state.last_name}
+              onChange={handleChange}
+              fullWidth
+              required
+              error={touched.last_name && !!errors.last_name}
+              helperText={touched.last_name ? errors.last_name : ""}
+              disabled={formType === "edit"}
+            />
+          </Grid>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <TextField
+              name="phone_number"
+              label="Phone Number"
+              value={state.phone_number}
+              onChange={handleChange}
+              fullWidth
+              required
+              error={touched.phone_number && !!errors.phone_number}
+              helperText={touched.phone_number ? errors.phone_number : ""}
+              disabled={formType === "edit"}
+            />
+            </Grid>
+            <Grid size={{ xs: 12, md: 6 }}>
+            <TextField
+              name="email_address"
+              label="Email"
+              value={state.email_address}
+              onChange={handleChange}
+              fullWidth
+              required
+              error={touched.email_address && !!errors.email_address}
+              helperText={touched.email_address ? errors.email_address : ""}
+              disabled={formType === "edit"}
+            />
+          </Grid>
+
+          <Grid size={{ xs: 20, md: 10 }}>
+            <FormControl fullWidth variant="outlined" 
+              error={touched.current_grade_id && !!errors.current_grade_id} 
+            >
+              <InputLabel id="grade-label">Select Grade</InputLabel>
+              <Select
+                labelId="grade-label"
+                name="current_grade_id"
+                value={state.current_grade_id || ""}
+                onChange={handleGradeChange}
+                label="Grade"
+                displayEmpty
+              >
+                
+                {grades.map((grade) => (
+                  <MenuItem 
+                            key={grade.id} 
+                            value={grade.id}
+                            disabled={formType === "edit" && originalGradeId != null && grade.id < originalGradeId}>
+                    {grade.name}
+                  </MenuItem>
+                ))}
+                
+              </Select>
+              {touched.current_grade_id && errors.current_grade_id &&(
+                <Typography variant="caption" color="error">
+                  {errors.current_grade_id}
+                </Typography>
+              )}
+            </FormControl>
+          </Grid>
+          <Grid size={{ xs: 22, md: 10 }}>
+          <Typography variant="subtitle1">Select Role</Typography>
+          <RadioGroup
+            row
+            name="role"
+            value={state.role}
+            onChange={(e) => dispatch({ type: EmployeeActionType.UPDATE_FIELD, payload: {field: "role", value: e.target.value} })}
+          >
+            <FormControlLabel value="HR" control={<Radio />} label="HR" disabled={formType === "edit"} />
+            <FormControlLabel value="TravelDeskExe" control={<Radio />} label="TravelDeskExe" disabled={formType === "edit"} />
+            <FormControlLabel value="Employee" control={<Radio />} label="Employee" disabled={formType === "edit"} />
+          </RadioGroup>
+          </Grid>
+       
+        <Grid size={{ xs: 12 }} sx={{ display: "flex", justifyContent: "center" }}>
+          <Button 
+            variant="contained" 
+            color="primary" 
+            type="submit"
+            disabled={!isValid}
+            sx={{
+                mt: 1, py: 1.2, px: 4, fontWeight: 600, letterSpacing: 0.5,
+                backgroundColor: "#1e4d8c", "&:hover": { backgroundColor: "#164080" }
+              }}
+            >
+            {formType === "add" ? "SUBMIT" : "UPDATE"}
+          </Button>
+        </Grid>
+          
       </Grid>
-    </Grid>
-      </Box>
-      </Paper>
-    </Container>
-  </Box>
-      <CustomModal
-        open={successOpen}
-        onClose={() => {
-        setSuccessOpen(false);
-        resetForm();
-        navigate('/add-employee')
-        }}
-        title={modalMessages.AddEmployee.success.title}
-        message={modalMessages.AddEmployee.success.message}
-        color={modalMessages.AddEmployee.success.color}
-      />
-      <CustomModal 
-        open={updateOpen}
-        onClose={() => {
-          setUpdateOpen(false)
+        </form>
+        </Paper>
+      </Container>
+    </Box>
+        <CustomModal
+          open={successOpen}
+          onClose={() => {
+          setSuccessOpen(false);
           resetForm();
-          navigate('/employee-detail');
-        }}
-        title={modalMessages.AddEmployee.update.title}
-        message={modalMessages.AddEmployee.update.message}
-        color={modalMessages.AddEmployee.update.color}
-      />
-      <CustomModal
-        open={errorOpen}
-        onClose={() => setErrorOpen(false)}
-        title={modalMessages.AddEmployee.error.title}
-        message={modalMessages.AddEmployee.error.message}
-        color={modalMessages.AddEmployee.error.color}
-      />
-      <CustomModal
-        open={warningOpen}
-        onClose={() => setWarningOpen(false)}
-        title={modalMessages.AddEmployee.warning.title}
-        message={modalMessages.AddEmployee.warning.message}
-        color={modalMessages.AddEmployee.warning.color}
-      />
-    </>
-  );
+          navigate('/add-employee')
+          }}
+          title={modalMessages.AddEmployee.success.title}
+          message={modalMessages.AddEmployee.success.message}
+          color={modalMessages.AddEmployee.success.color}
+        />
+        <CustomModal 
+          open={updateOpen}
+          onClose={() => {
+            setUpdateOpen(false)
+            resetForm();
+            navigate('/employee-detail');
+          }}
+          title={modalMessages.AddEmployee.update.title}
+          message={modalMessages.AddEmployee.update.message}
+          color={modalMessages.AddEmployee.update.color}
+        />
+        <CustomModal
+          open={errorOpen}
+          onClose={() => setErrorOpen(false)}
+          title={modalMessages.AddEmployee.error.title}
+          message={modalMessages.AddEmployee.error.message}
+          color={modalMessages.AddEmployee.error.color}
+        />
+        <CustomModal
+          open={warningOpen}
+          onClose={() => setWarningOpen(false)}
+          title={modalMessages.AddEmployee.warning.title}
+          message={modalMessages.AddEmployee.warning.message}
+          color={modalMessages.AddEmployee.warning.color}
+        />
+      </>
+    );
 };
 
 export default AddEmployee;

@@ -26,6 +26,8 @@ import {
   ReimbursementProvider,
 } from "./Reimbursemnet_Mgmt/Context/ReimbursementContext";
 import NewReimbursement from "./Reimbursemnet_Mgmt/Components/NewReimbursement";
+import ReimbursementsList from "./Reimbursemnet_Mgmt/Components/ReimbursementList";
+import ProcessReimbursement from "./Reimbursemnet_Mgmt/Components/ProcessReimbursement";
 
 function App() {
   const [open, setOpen] = useState(false);
@@ -76,6 +78,14 @@ function App() {
                     <Route  
                       path="/reimbursement-request"
                       element={<NewReimbursement />}
+                    />
+                    <Route
+                      path="/reimbursement-detail"
+                      element ={<ReimbursementsList/>}
+                    />
+                    <Route
+                      path="/reimbursement-process"
+                      element ={<ProcessReimbursement/>}
                     />
                   </Route>
                 </Routes>

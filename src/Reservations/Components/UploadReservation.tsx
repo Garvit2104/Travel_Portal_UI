@@ -12,6 +12,8 @@ import {
   FormHelperText,
   Alert,
   CircularProgress,
+  Container,
+  Paper,
 } from "@mui/material";
 import { SelectChangeEvent } from "@mui/material/Select";
 import { ReservationContext } from "../Context/ReservationContext";
@@ -167,14 +169,15 @@ const handleSubmit = async (e: React.FormEvent) => {
 
   return (
     <>
-    <Box sx={{ p: 4, maxWidth: 800, mx: "auto" }}>
-
-      <Typography variant="h5" fontWeight="bold" gutterBottom>
-        Upload Reservation
+    <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center",  p: 4, maxWidth: 800, mx: "auto" }}>
+      <Container maxWidth = "sm">
+        <Paper elevation={3} sx={{ p: 5, borderRadius: 3, backgroundColor: "#ffffff" }}>
+          <Typography variant="h5" fontWeight="bold" gutterBottom sx = {{ textAlign : "center", mb : 3}}>
+              Reservation Form
       </Typography>
 
       <form onSubmit={handleSubmit} noValidate>
-        <Grid container spacing={3}>
+        <Grid container spacing={2}>
 
           <Grid size={{ xs: 12, md: 6 }}>
             <TextField
@@ -211,7 +214,7 @@ const handleSubmit = async (e: React.FormEvent) => {
           </Grid>
 
           {/* ── Reservation Type ─────────────────────────────────────────────── */}
-          <Grid size={{ xs: 12, md: 6 }}>
+        <Grid size={{ xs: 12, md: 6 }}>
             <FormControl fullWidth required error={!!validationErrors.reservationTypeId}>
               <InputLabel>Reservation Type</InputLabel>
               <Select
@@ -286,22 +289,20 @@ const handleSubmit = async (e: React.FormEvent) => {
               label="Remarks (Optional)"
               name="remarks"
               multiline
-              rows={3}
+              rows={1}
               value={formData.remarks}
               onChange={handleTextChange}
             />
           </Grid>
 
           {/* ── File Upload ──────────────────────────────────────────────────── */}
-          <Grid size={{ xs: 12 }}>
-            {/* component="label" makes the Button act as a file input trigger
-                The hidden <input> opens the file browser when Button is clicked */}
+          <Grid size ={{xs:12}} sx = {{display: "flex", justifyContent: "center"}}>
             <Button
               variant="outlined"
               component="label"
               color={validationErrors.file ? "error" : "primary"}
             >
-              Upload Document (PDF, max 1MB)
+              Upload Document 
               <input
                 type="file"
                 hidden
@@ -325,17 +326,14 @@ const handleSubmit = async (e: React.FormEvent) => {
             )}
           </Grid>
 
-          {/* ── Submit Button ────────────────────────────────────────────────── */}
-          <Grid size={{ xs: 12 }}>
+          <Grid size ={{xs:12}} sx = {{display: "flex", justifyContent: "center"}}>
             <Button
               type="submit"
               variant="contained"
               size="large"
-              // Disabled while API call is in progress to prevent duplicate submissions
               disabled={state.loading}
             >
-              {/* ✅ FIX: CircularProgress was commented out in the original
-                  Restored it — shows spinner during loading, label when idle */}
+
               {state.loading ? (
                 <CircularProgress size={24} color="inherit" />
               ) : (
@@ -346,6 +344,8 @@ const handleSubmit = async (e: React.FormEvent) => {
 
         </Grid>
       </form>
+      </Paper>
+    </Container>
     </Box>
      <CustomModal
         open={successOpen}

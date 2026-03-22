@@ -2,6 +2,7 @@ import {Drawer, List, ListItemButton, ListItemIcon, ListItemText, Toolbar} from 
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import HomeIcon from '@mui/icons-material/Home';
 import ListIcon from '@mui/icons-material/List';
+import ViewListIcon from '@mui/icons-material/ViewList';
 import SubwayIcon from '@mui/icons-material/Subway';
 import PendingIcon from '@mui/icons-material/Pending';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
@@ -25,7 +26,8 @@ const Sidebar = ({open, onClose} : SidebarProps) => {
         { text: 'UnApproved Request', path: '/pending-travel-request', icon: <PendingIcon /> },
         { text: 'Upload ResvDocument', path: '/upload-reservation-docs', icon: <UploadFileIcon />},
         { text: 'Track Reservation', path: '/tracking-reservation-info', icon: <TimelineIcon />},
-        { text: 'Reimbursement Request', path: '/reimbursement-request', icon: <FeedIcon />}
+        { text: 'Reimbursement Request', path: '/reimbursement-request', icon: <FeedIcon />},
+        { text: 'Reimbursement Details', path: '/reimbursement-detail', icon: <ViewListIcon/>}
       ];
 
     const location = useLocation();

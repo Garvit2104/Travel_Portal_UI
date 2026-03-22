@@ -169,140 +169,130 @@ export default function NewTravelRequest() {
     
   return (
     <>
-    <Box sx={{
-        
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "flex-start",
-        alignItems: "center",
-        borderRadius: 5,
-        pt: 4,
-      }}>
-    <Container maxWidth ="sm">
-        <Paper elevation={3} style={{padding: '20px', marginTop: '20px'}}>
-            <Typography component = "h1" variant="h5" align="center">
-                New Travel Request 
-            </Typography>
-            
-            <Box component="form" noValidate sx={{ mt: 3 }} onSubmit={handleCreateRequest}>
-                <Box sx = {{display: 'flex', gap: 2, mb: 2}}>
-                    <TextField
-                        type='number'
-                        name="raised_by_employee_id"
-                        label="Employee ID"
-                        placeholder="Enter Employee ID"
-                        value={state.raised_by_employee_id}
-                        onChange={handleChange}
-                        fullWidth
-                        required    
-                    />
+    <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", p: 4, maxWidth: 800, mx: "auto" }}>
+  <Container maxWidth="sm">
+    <Paper elevation={3} sx={{ p: 5, borderRadius: 3, backgroundColor: "#ffffff" }}>
+      <Typography variant="h5" fontWeight="bold" gutterBottom sx={{ textAlign: "center", mb: 3 }}>
+        New Travel Request Form
+      </Typography>
 
-                    <TextField
-                        type='number'
-                        name="to_be_approved_by_hr_id"
-                        label="HR ID"
-                        placeholder="Enter HR ID"
-                        value={state.to_be_approved_by_hr_id}
-                        onChange={handleChange}
-                        fullWidth
-                        required    
-                    />
-                </Box>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <Box sx = {{display: 'flex', gap: 2, mb: 2}}>
-                    <DatePicker
-                        label="From Date"
-                        value={state.from_date}
-                        onChange={(newValue) => handleDateChange("from_date", newValue)}
-                        disablePast
-                        slotProps={{
-                            textField: {
-                              fullWidth: true,
-                              required: true,
-                            },
-                          }} 
-                    />
-                    <DatePicker
-                        label="To Date"
-                        value={state.to_date}
-                        onChange={(newValue) => handleDateChange("to_date", newValue)}
-                        disablePast
-                        slotProps={{
-                            textField: {
-                              fullWidth: true,
-                              required: true,
-                            },
-                          }}
-                    />
+      <form noValidate onSubmit={handleCreateRequest}>
+        <Grid container spacing={2}>
 
-                </Box>
-                </LocalizationProvider>
-                <Box sx = {{display: 'flex', gap: 2, mb: 2}}>
-                    <TextField
-                        name="purpose_of_travel"
-                        label="Purpose of Travel"
-                        placeholder="Enter Purpose of Travel"
-                        value={state.purpose_of_travel}
-                        onChange={handleChange}
-                        fullWidth
-                        required    
-                    />
-                    <FormControl fullWidth required>
-                        <InputLabel id="location-label">Location</InputLabel>
-                        <Select 
-                        labelId="location-label" 
-                        name="location_id" 
-                        value={state.location_id || ""} 
-                        onChange={handleLocationChange}
-                            // dispatch({ type: TravelPlannerActionType.UPDATE_FIELD, payload: { field: "location_id", value: e.target.value } })
-                        //   }
-                        label="Location"
-                        >
-                    <MenuItem value="" disabled>
-                    Select Location
+          <Grid size={{ xs: 12, md: 6 }}>
+            <TextField
+              type="number"
+              name="raised_by_employee_id"
+              label="Employee ID"
+              placeholder="Enter Employee ID"
+              value={state.raised_by_employee_id}
+              onChange={handleChange}
+              fullWidth
+              required
+            />
+          </Grid>
+
+          <Grid size={{ xs: 12, md: 6 }}>
+            <TextField
+              type="number"
+              name="to_be_approved_by_hr_id"
+              label="HR ID"
+              placeholder="Enter HR ID"
+              value={state.to_be_approved_by_hr_id}
+              onChange={handleChange}
+              fullWidth
+              required
+            />
+          </Grid>
+
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <Grid size={{ xs: 12, md: 6 }}>
+              <DatePicker
+                label="From Date"
+                value={state.from_date}
+                onChange={(newValue) => handleDateChange("from_date", newValue)}
+                disablePast
+                slotProps={{ textField: { fullWidth: true, required: true } }}
+              />
+            </Grid>
+
+            <Grid size={{ xs: 12, md: 6 }}>
+              <DatePicker
+                label="To Date"
+                value={state.to_date}
+                onChange={(newValue) => handleDateChange("to_date", newValue)}
+                disablePast
+                slotProps={{ textField: { fullWidth: true, required: true } }}
+              />
+            </Grid>
+          </LocalizationProvider>
+
+          <Grid size={{ xs: 12, md: 6 }}>
+            <TextField
+              name="purpose_of_travel"
+              label="Purpose of Travel"
+              placeholder="Enter Purpose of Travel"
+              value={state.purpose_of_travel}
+              onChange={handleChange}
+              fullWidth
+              required
+            />
+          </Grid>
+
+          <Grid size={{ xs: 12, md: 6 }}>
+            <FormControl fullWidth required>
+              <InputLabel id="location-label">Location</InputLabel>
+              <Select
+                labelId="location-label"
+                name="location_id"
+                value={state.location_id || ""}
+                onChange={handleLocationChange}
+                label="Location"
+              >
+                <MenuItem value="" disabled>Select Location</MenuItem>
+                {locations.map((loc) => (
+                  <MenuItem key={loc.id} value={String(loc.id)}>
+                    {loc.name}
                   </MenuItem>
-                  {locations.map((loc) => (
-                    <MenuItem key={loc.id} value={String(loc.id)}>
-                      {loc.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-                {errors.location_id && (
-                    <Typography variant="caption" color="error">
-                      {errors.location_id}
-                    </Typography>
-                  )}
-              </FormControl>
-                </Box>
-                  <Box>
-                    <TextField
-                        name="Priority"
-                        label="Priority"
-                        placeholder="Enter Priority"
-                        value={state.Priority}
-                        onChange={handleChange}
-                        fullWidth
-                        required    
-                    />
-                </Box>
-                <Grid container spacing={4}
-                sx ={{
-                    justifyContent: 'center',
-                    alignItems: 'center',}}
-                >
-                <Grid size ={{xs:12, sm:8, md: 6, }}>
-                <Button fullWidth variant="contained" 
-                    color="primary" type="submit"      
-                 >
-                    CREATE
-                </Button>
-                </Grid>
-                </Grid> 
-            </Box>         
-        </Paper>
-    </Container>
-    </Box>
-          <CustomModal
+                ))}
+              </Select>
+              {errors.location_id && (
+                <Typography variant="caption" color="error">
+                  {errors.location_id}
+                </Typography>
+              )}
+            </FormControl>
+          </Grid>
+
+          <Grid size={{ xs: 12 }}>
+            <TextField
+              name="Priority"
+              label="Priority"
+              placeholder="Enter Priority"
+              value={state.Priority}
+              onChange={handleChange}
+              fullWidth
+              required
+            />
+          </Grid>
+
+          <Grid size={{ xs: 12 }} sx={{ display: "flex", justifyContent: "center" }}>
+            <Button
+              variant="contained"
+              color="primary"
+              type="submit"
+              sx={{ mt: 1, py: 1.2, px: 4, fontWeight: 600, letterSpacing: 0.5, backgroundColor: "#1e4d8c", "&:hover": { backgroundColor: "#164080" } }}
+            >
+              CREATE
+            </Button>
+          </Grid>
+
+        </Grid>
+      </form>
+    </Paper>
+  </Container>
+</Box>          
+<CustomModal
           open={successOpen}
           onClose={() => setSuccessOpen(false)}
           title={modalMessages.CreateRequest.success.title}
