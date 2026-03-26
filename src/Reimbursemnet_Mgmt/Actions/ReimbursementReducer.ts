@@ -1,4 +1,4 @@
-import { ReimbursementTypes, ReimbursementState, ReimbursementRequests } from "../States/ReimbursementStates";
+import { ReimbursementTypes, ReimbursementState, ReimbursementRequests, initialReimbursementState } from "../States/ReimbursementStates";
 
 export type ReimbursementAction =
     | { type: "FETCH_REIMBURSEMENT_TYPES_REQUEST" }
@@ -8,6 +8,8 @@ export type ReimbursementAction =
     | { type: "CREATE_REIMBURSEMENT_REQUEST" }
     | { type: "SUCCESS_CREATE_REIMBURSEMENT"; payload: string }
     | { type: "FAILURE_CREATE_REIMBURSEMENT"; payload: string }
+
+    | {type: "RESET_FORM"}
 
 
 export const ReimbursementReducer = (state: ReimbursementState, action: ReimbursementAction): ReimbursementState => {
@@ -45,6 +47,9 @@ export const ReimbursementReducer = (state: ReimbursementState, action: Reimburs
                 ...state,
                 error: action.payload,
             };
+
+        case "RESET_FORM":
+            return initialReimbursementState;
         default:
             return state;                           
     }

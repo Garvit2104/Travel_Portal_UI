@@ -20,6 +20,7 @@ import {
 import { ReimbursementContext } from "../Context/ReimbursementContext";
 import modalMessage from '../Resources/ReimbursementRespurce.json';
 import CustomModal from "../../Common/Modals";
+import { ReimbursementTypes } from "../States/ReimbursementStates";
 
 const NewReimbursement = () => {
     const {state, dispatch} = useContext(ReimbursementContext);
@@ -32,6 +33,8 @@ const NewReimbursement = () => {
         invoice_date: "",
         invoice_amount: ""  
     });
+    
+    const [reimbursementType, setReimbursementType] = useState<ReimbursementTypes[]>([]);
 
     const [invoiceFile, setInvoiceFile] = useState<File | null>(null);
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -39,6 +42,8 @@ const NewReimbursement = () => {
 
     const [successOpen, setSuccessOpen] = useState(false);
     const [errorOpen, setErrorOpen] = useState(false);
+
+    const [generatedRequestId, setGeneratedRequestId] = useState<number | null>(null);
 
     const validateField = (name: string, value: string) => {
     const newErrors = { ...errors };
@@ -224,11 +229,54 @@ const NewReimbursement = () => {
         validateField(name, value);
     };
 
-    const handleSubmit = (e : React.FormEvent) => {
+    // ── FIX 1: useEffect — dispatch to reducer instead of local state ──────────
+useEffect(() => {
+  const getReimbursementTypes = async () => {
+    dispatch({ type: "FETCH_REIMBURSEMENT_TYPES_REQUEST" });
+    try {
+      const response = await fetch("http://localhost:5000/api/Reimbursement_services/reimbursements/types");
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data = await response.json();
+      dispatch({ type: "SUCCESS_FETCH_REIMBURSEMENT_TYPES", payload: data });
+    } catch (err) {
+      console.error("Error fetching reimbursement types", err);
+      dispatch({ type: "FAILURE_FETCH_REIMBURSEMENT_TYPES", payload: "Failed to load types" });
+    }
+  };
+  getReimbursementTypes();
+}, []);
+        
+    const handleSubmit = async(e : React.FormEvent) => {
         e.preventDefault();
         const isValid = validate();   // validates ALL fields as final check
         if (!isValid) return;         // stop if any error exists
         
+         try{
+                const response = await fetch("http://localhost:5000/api/Reimbursement_services/reimbursements/add",{
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(formData)
+                });
+                if(!response.ok){
+                    const text = await response.text().catch(() => "");
+                    console.error("Reimbursement request failed:", `${response.status} ${response.statusText} - ${text}`);
+                    setErrorOpen(true);
+                    return;
+                } 
+                const result = await response.json().catch(() => null);
+                if (result?.reimbursementId) {
+                    setGeneratedRequestId(result.reimbursementId);
+                }        
+                setSuccessOpen(true);
+                
+                dispatch({ type: "RESET_FORM" });
+    
+            } catch (error) {
+                console.log("Reimbursement request failed to create", error);
+                setErrorOpen(true);
+            } 
  
         setSubmitted(true);
   
@@ -276,7 +324,7 @@ const NewReimbursement = () => {
             <FormControl fullWidth error={!!errors.reimbursement_type_id}>
               <InputLabel>Reimbursement Type</InputLabel>
               <Select
-                name="reimbursementTypeId"
+                name="reimbursement_type_id"
                 value={formData.reimbursement_type_id}
                 label="Reimbursement Type"
                 onChange={handleSelectChange}
