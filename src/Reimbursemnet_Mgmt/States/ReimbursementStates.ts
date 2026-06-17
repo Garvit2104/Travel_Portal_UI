@@ -1,6 +1,6 @@
 export interface ReimbursementTypes{
     id: number;
-    name: string;
+    type: string;
 }
 
 export interface ReimbursementRequests {

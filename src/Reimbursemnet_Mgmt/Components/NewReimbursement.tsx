@@ -20,6 +20,7 @@ import {
 import { ReimbursementContext } from "../Context/ReimbursementContext";
 import modalMessage from '../Resources/ReimbursementRespurce.json';
 import CustomModal from "../../Common/Modals";
+import { ReimbursementTypes } from "../States/ReimbursementStates";
 
 const NewReimbursement = () => {
     const {state, dispatch} = useContext(ReimbursementContext);
@@ -28,10 +29,12 @@ const NewReimbursement = () => {
         travel_request_id: "",
         request_raised_by_employee_id: "",
         reimbursement_type_id: "",
-        invoice_number: "",
         invoice_date: "",
         invoice_amount: ""  
     });
+
+    const [reimbursementType, setReimbursementType] = useState<ReimbursementTypes[]>([]);
+    const [generatedRequestId, setGeneratedRequestId] = useState<number | null>(null);
 
     const [invoiceFile, setInvoiceFile] = useState<File | null>(null);
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -61,24 +64,14 @@ const NewReimbursement = () => {
             break;
 
         case "reimbursement_type_id":
-            if (!value.trim()) {
+            if (!String(value).trim()) {
                 newErrors.reimbursementTypeId = "Reimbursement Type is required";
             } else {
                 delete newErrors.reimbursementTypeId;
             }
             break;
 
-        case "invoice_number":
-            const invoiceNumberRegex = /^[A-Za-z0-9\-\/]+$/;
-            if (!value.trim()) {
-                newErrors.invoiceNumber = "Invoice Number is required";
-            } else if (!invoiceNumberRegex.test(value)) {
-                newErrors.invoiceNumber = "Only letters, numbers, - or / allowed";
-            } else {
-                delete newErrors.invoiceNumber;
-            }
-            break;
-
+        
         case "invoice_date":
             if (!value.trim()) {
                 newErrors.invoiceDate = "Invoice Date is required";
@@ -137,21 +130,14 @@ const NewReimbursement = () => {
         if (!formData.reimbursement_type_id) {
             newErrors.reimbursementTypeId = "Reimbursement Type is required";
         }
-        if (!formData.invoice_number) {
-            newErrors.invoiceNumber = "Invoice Number is required";
-        }
+       
         if (!formData.invoice_date) {
             newErrors.invoiceDate = "Invoice Date is required";
         }
         if (!formData.invoice_amount) {
             newErrors.invoiceAmount = "Invoice Amount is required";
         }
-        // Invoice Number Regex
-        const invoiceNumberRegex = /^[A-Za-z0-9\-\/]+$/;
-        if(formData.invoice_number && !invoiceNumberRegex.test(formData.invoice_number)) {
-            newErrors.invoiceNumber = "Invoice Number can only contain letters, numbers, hyphens and slashes";
-        }
-
+      
         // Invoice Amount should be positive number
         const invoiceAmountRegex = /^\d+(\.\d{1,2})?$/;
         if(formData.invoice_amount && !invoiceAmountRegex.test(formData.invoice_amount)) {
@@ -191,6 +177,27 @@ const NewReimbursement = () => {
         return Object.keys(newErrors).length === 0;
     };
 
+    useEffect(()=>{
+      const getReimbursementType = async () =>{
+          dispatch({type: "FETCH_REIMBURSEMENT_TYPES_REQUEST"});
+          try{
+              const response = await fetch("http://localhost:5000/api/Reimbursemnet_Services/reimbursementTypes/types");
+              if (!response.ok) 
+                throw new Error(`HTTP ${response.status}`);
+              const data = await response.json();
+              console.log(data);
+
+              dispatch({type: "SUCCESS_FETCH_REIMBURSEMENT_TYPES", payload: data});
+          }catch(err){
+              console.error("Error fetching Reimbursement types", err);
+              dispatch({type: "FAILURE_FETCH_REIMBURSEMENT_TYPES", payload: "failed to load types"});
+          }
+      };
+      getReimbursementType();
+  },[])
+
+  
+
     const handleTextChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>{
         const {name, value} = e.target;
         setFormData((prevData) =>({
@@ -224,15 +231,60 @@ const NewReimbursement = () => {
         validateField(name, value);
     };
 
-    const handleSubmit = (e : React.FormEvent) => {
-        e.preventDefault();
-        const isValid = validate();   // validates ALL fields as final check
-        if (!isValid) return;         // stop if any error exists
-        
- 
-        setSubmitted(true);
+    const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+     
+      const isValid = validate();
+      if (!isValid) return;
+     
+      // ── Build multipart payload (required for file upload) ──────────────
+      const payload = new FormData();
+      payload.append("travel_request_id",              formData.travel_request_id);
+      payload.append("request_raised_by_employee_id",  formData.request_raised_by_employee_id);
+      payload.append("reimbursement_type_id",          formData.reimbursement_type_id);
   
-};
+      payload.append("invoice_date",                   formData.invoice_date);
+      payload.append("invoice_amount",                 formData.invoice_amount);
+      if (invoiceFile) {
+        payload.append("document", invoiceFile);  // actual file
+      }
+     
+      dispatch({ type: "CREATE_REIMBURSEMENT_REQUEST" });
+     
+      try {
+        const response = await fetch(
+          "http://localhost:5000/api/Reimbursemnet_Services/reimbursement/add",
+          {
+            method: "POST",
+            body: payload,
+          }
+        );
+     
+        if (!response.ok) {
+          const text = await response.text().catch(() => "");
+          console.error("Reimbursement request failed:", `${response.status} ${response.statusText} - ${text}`);
+          dispatch({ type: "FAILURE_CREATE_REIMBURSEMENT", payload: "Submission failed" });
+          setErrorOpen(true);
+          return;
+        }
+     
+        const result = await response.json().catch(() => null);
+        if (result?.reimbursementId) {
+          setGeneratedRequestId(result.reimbursementId);
+        }
+     
+        dispatch({ type: "SUCCESS_CREATE_REIMBURSEMENT", payload: "Reimbursement submitted successfully" });
+        setSubmitted(true);   
+        setSuccessOpen(true);
+        dispatch({ type: "RESET_FORM" }); 
+     
+      } catch (error) {
+        console.error("Reimbursement request failed to create:", error);
+        dispatch({ type: "FAILURE_CREATE_REIMBURSEMENT", payload: "Network error" });
+        setErrorOpen(true);
+        
+      }
+    };
 
   return (
     <>
@@ -276,15 +328,15 @@ const NewReimbursement = () => {
             <FormControl fullWidth error={!!errors.reimbursement_type_id}>
               <InputLabel>Reimbursement Type</InputLabel>
               <Select
-                name="reimbursementTypeId"
-                value={formData.reimbursement_type_id}
+                name="reimbursement_type_id"
+                value={formData.reimbursement_type_id ?? ""}
                 label="Reimbursement Type"
                 onChange={handleSelectChange}
                 onBlur={handleSelectBlur}
               >
-                {state.reimbursementTypes.map((type) => (
-                  <MenuItem key={type.id} value={type.id}>
-                    {type.name}
+                {state.reimbursementTypes.map((category) => (
+                  <MenuItem key={category.id} value={category.id}>
+                    {category.type}
                   </MenuItem>
                 ))}
               </Select>
@@ -292,18 +344,6 @@ const NewReimbursement = () => {
             </FormControl>
           </Grid>
 
-          <Grid size={{ xs: 12, md: 6 }}>
-            <TextField fullWidth required
-              label="Invoice Number"
-              name="invoice_number"
-              type="text"
-              value={formData.invoice_number}
-              onChange={handleTextChange}
-              onBlur={handleBlur}
-              error={!!errors.invoice_number}
-              helperText={errors.invoice_number}
-            />
-          </Grid>
 
           <Grid size={{ xs: 12, md: 6 }}>
             <TextField fullWidth

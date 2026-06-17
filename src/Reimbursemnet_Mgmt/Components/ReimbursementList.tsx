@@ -38,7 +38,7 @@ const ReimbursementsList: React.FC = () => {
     setLoader(true);
     setSearched(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/Reimbursement/travel-request/${id}`);
+      const res = await fetch(`http://localhost:5000/api/Reimbursemnet_Services/reimbursements/${id}/requests`);
       if (!res.ok) { setRows([]); return; }
       const data = await res.json();
       setRows(Array.isArray(data) ? data : []);
