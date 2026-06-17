@@ -94,8 +94,8 @@ const ReimbursementsList: React.FC = () => {
         <TableContainer sx={{ maxHeight: 500 }}>
           <Table stickyHeader aria-label="reimbursements table">
             <TableHead>
-              <TableRow>
-                {["ID", "Employee ID", "Type ID",  "Status", "Action"].map((h) => (
+              <TableRow>  
+                {["ID", "Employee ID", "Type ID",  "Status", "Amount (INR)", "Action"].map((h) => (
                   <TableCell key={h} sx={{ fontWeight: 700, fontSize: "0.85rem", letterSpacing: 0.4 }}>
                     {h}
                   </TableCell>
@@ -129,6 +129,10 @@ const ReimbursementsList: React.FC = () => {
                             size="small"
                             sx={{ fontSize: "0.75rem" }}
                           />
+                        </TableCell>
+
+                        <TableCell sx={{ fontSize: "0.85rem", fontWeight: 600, color: "#1e4d8c" }}>
+                        {isExpanded ? `₹ ${Number(row.invoice_amount).toLocaleString("en-IN")}`: "*****"}
                         </TableCell>
 
                         {/* ── Action Column ── */}
@@ -168,7 +172,7 @@ const ReimbursementsList: React.FC = () => {
                   })
               ) : (
                 <TableRow>
-                  <TableCell colSpan={8} sx={{ textAlign: "center", py: 4, color: "text.secondary" }}>
+                  <TableCell colSpan={6} sx={{ textAlign: "center", py: 4, color: "text.secondary" }}>
                     {searched
                       ? "No reimbursements found for this Travel Request ID."
                       : "Enter a Travel Request ID and search."}
