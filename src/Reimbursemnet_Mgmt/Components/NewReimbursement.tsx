@@ -43,6 +43,8 @@ const NewReimbursement = () => {
     const [successOpen, setSuccessOpen] = useState(false);
     const [errorOpen, setErrorOpen] = useState(false);
 
+    const [generatedRequestId, setGeneratedRequestId] = useState<number | null>(null);
+
     const validateField = (name: string, value: string) => {
     const newErrors = { ...errors };
 
